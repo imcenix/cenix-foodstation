@@ -1,0 +1,20 @@
+{
+  "name": "cenix-foodstation",
+  "type": "module",
+  "version": "1.0.0",
+  "description": "Cenix's Food Station — playful pop food blog at yum.imcenix.com",
+  "scripts": {
+    "predev": "node ./scripts/link-assets.mjs",
+    "dev": "astro dev",
+    "prebuild": "node ./scripts/link-assets.mjs",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro"
+  },
+  "dependencies": {
+    "astro": "^5.1.0"
+  },
+  "engines": {
+    "node": ">=18.17.0"
+  }
+}

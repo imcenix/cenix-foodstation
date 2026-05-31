@@ -1,0 +1,86 @@
+---
+import type { CollectionEntry } from 'astro:content';
+
+interface Props {
+  restaurant: CollectionEntry<'restaurants'>;
+  folder: string;
+  mealTags?: string;
+}
+
+const { restaurant, folder, mealTags = 'all' } = Astro.props;
+const { data } = restaurant;
+const coverUrl = `/restaurants/${folder}/cover.jpg`;
+
+const type        = data.type ?? 'restaurant';
+const isRestaurant = type === 'restaurant';
+const isCook       = type === 'cook';
+const isCollect    = type === 'collect';
+
+const starRating = (isRestaurant && data.rating)
+  ? Math.max(1, Math.min(5, Math.round(data.rating)))
+  : 0;
+const stars = starRating > 0
+  ? '★'.repeat(starRating) + '☆'.repeat(5 - starRating)
+  : '';
+---
+
+<button
+  type="button"
+  class:list={['r-card', `r-card--${type}`]}
+  data-cuisine={data.cuisine}
+  data-neighborhood={data.neighborhood}
+  data-meal-tags={mealTags}
+  data-modal={`restaurant-${data.slug}`}
+>
+  <div class="r-card-media">
+    <img src={coverUrl} alt={data.name} loading="lazy" />
+
+    {/* Stars — restaurant only */}
+    {isRestaurant && starRating > 0 && (
+      <span class="r-card-rating">
+        <span class="r-card-rating-star" aria-label={`${starRating} trên 5 sao`}>{stars}</span>
+      </span>
+    )}
+
+    {/* Collect badge */}
+    {isCollect && (
+      <span class="r-card-badge r-card-badge--collect" aria-hidden="true">🔖</span>
+    )}
+
+    {/* Cook badge */}
+    {isCook && (
+      <span class="r-card-badge r-card-badge--cook" aria-hidden="true">👨‍🍳</span>
+    )}
+  </div>
+
+  <div class="r-card-body">
+
+    {/* Cuisine · Neighborhood — restaurant only */}
+    {isRestaurant && (data.cuisine || data.neighborhood) && (
+      <span class="r-card-meta">
+        {data.cuisine && <span>{data.cuisine}</span>}
+        {data.cuisine && data.neighborhood && (
+          <span class="r-card-meta-dot" aria-hidden="true"></span>
+        )}
+        {data.neighborhood && <span>{data.neighborhood}</span>}
+      </span>
+    )}
+
+    <h3 class="r-card-title">{data.name}</h3>
+
+    {data.tagline && (
+      <p class="r-card-tagline">{data.tagline}</p>
+    )}
+
+    {/* Footer: price only (restaurant), hidden for cook/collect */}
+    {isRestaurant && data.price_range && (
+      <div class="r-card-foot">
+        <span class="r-card-price">
+          <span aria-hidden="true">₫</span>
+          {data.price_range}
+        </span>
+      </div>
+    )}
+
+  </div>
+</button>

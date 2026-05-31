@@ -1,0 +1,1594 @@
+---
+import { getCollection, render } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Hero from '../components/Hero.astro';
+import RestaurantCard from '../components/RestaurantCard.astro';
+
+const allEntries = (await getCollection('restaurants'))
+  .filter((r) => !r.id.startsWith('_template'));
+
+/* Sort: order field (nhỏ trước), null xuống cuối, rồi theo tên folder */
+allEntries.sort((a, b) => {
+  const oa = a.data.order ?? Infinity;
+  const ob = b.data.order ?? Infinity;
+  if (oa !== ob) return oa - ob;
+  return a.id.localeCompare(b.id);
+});
+
+/* Backward compat alias */
+const restaurants = allEntries;
+
+const folderSlug = (id: string) => id.split('/')[0];
+
+/* Category dùng explicit field, fallback type→category */
+const getCategory = (r: (typeof allEntries)[number]) => {
+  if (r.data.category) return r.data.category;
+  if (r.data.type === 'cook')    return 'cook';
+  if (r.data.type === 'collect') return 'collect';
+  return 'misc';
+};
+
+/* Tags dùng cho filter JS: 'all' + category */
+const getMealTags = (r: (typeof allEntries)[number]) =>
+  ['all', getCategory(r)].join(' ');
+
+const neighborhoods = Array.from(
+  new Set(allEntries.map((r) => r.data.neighborhood).filter(Boolean))
+).sort() as string[];
+
+const cuisines = Array.from(
+  new Set(allEntries.map((r) => r.data.cuisine).filter(Boolean))
+).sort() as string[];
+
+const contentRows = [
+  { id: 'row-1', title: 'Tui hay ăn nhất',      filter: 'explore_featured' },
+  { id: 'row-2', title: 'Quán local Đà Lạt nè',  filter: 'dalat'           },
+  { id: 'row-3', title: 'Đồ ăn tui nấu',         filter: 'cook'            },
+];
+
+/* ── Modal data prep ─────────────────────────────────────────── */
+const categoryMeta: Record<string, { label: string; icon: string; bg: string; color: string }> = {
+  breakfast: { label: 'Ăn sáng',   icon: '☀',  bg: 'rgba(255,217,61,.18)',  color: '#b58900' },
+  dinner:    { label: 'Ăn tối',    icon: '🌙', bg: 'rgba(99,102,241,.14)',   color: '#4338ca' },
+  drinks:    { label: 'Ăn nhậu',   icon: '♨',  bg: 'rgba(255,77,141,.13)',  color: '#e83a78' },
+  snack:     { label: 'Ăn vặt',    icon: '✦',  bg: 'rgba(167,139,250,.16)', color: '#7c3aed' },
+  dalat:     { label: 'Đà Lạt',    icon: '🌿', bg: 'rgba(77,212,172,.18)',  color: '#1ba87e' },
+  cook:      { label: 'Cenix Cook', icon: '👨‍🍳', bg: 'rgba(255,150,50,.14)',  color: '#c05c00' },
+  collect:   { label: 'Sưu tầm',   icon: '🔖', bg: 'rgba(100,100,200,.12)', color: '#4040aa' },
+};
+
+const formatVisited = (v: string) => {
+  const [year, month] = v.split('-');
+  return `Tháng ${parseInt(month, 10)}, ${year}`;
+};
+
+const restaurantsWithContent = await Promise.all(
+  allEntries.map(async (r) => {
+    const { Content } = await render(r);
+    const category = getCategory(r);
+    const catMeta = categoryMeta[category];
+    const starRating = r.data.rating ? Math.max(1, Math.min(5, Math.round(r.data.rating))) : 0;
+    return {
+      r,
+      Content,
+      folder: folderSlug(r.id),
+      category,
+      catMeta,
+      stars: starRating > 0 ? '★'.repeat(starRating) + '☆'.repeat(5 - starRating) : '',
+      starRating,
+      visitedLabel: r.data.visited ? formatVisited(String(r.data.visited)) : '',
+    };
+  })
+);
+---
+
+<!-- ================================================================
+     INTRO OVERLAY STYLES
+     ================================================================ -->
+<style is:global>
+
+/* ── Main overlay shell ─────────────────────────────────────── */
+.ov {
+  position: fixed; inset: 0; z-index: 9999;
+  overflow: hidden;
+
+  /* Colorful, light, modern — warm creamy pastels */
+  background:
+    radial-gradient(ellipse 70% 55% at  6%  5%,  rgba(255,170,170,.38) 0%, transparent 62%),
+    radial-gradient(ellipse 65% 50% at 92% 10%,  rgba(160,230,195,.32) 0%, transparent 62%),
+    radial-gradient(ellipse 55% 65% at  4% 92%,  rgba(195,180,255,.30) 0%, transparent 62%),
+    radial-gradient(ellipse 60% 55% at 94% 90%,  rgba(255,205,150,.30) 0%, transparent 62%),
+    radial-gradient(ellipse 42% 42% at 50% 50%,  rgba(190,225,255,.22) 0%, transparent 62%),
+    linear-gradient(148deg, #fff6f6 0%, #f6fff9 30%, #f6f5ff 62%, #fffbf2 100%);
+
+  animation: ov-fadein .55s ease forwards;
+}
+@keyframes ov-fadein { from{opacity:0} to{opacity:1} }
+
+/* ── Animated background blobs ─────────────────────────────── */
+.ov-blob {
+  position: absolute; border-radius: 50%;
+  filter: blur(90px); pointer-events: none; will-change: transform;
+}
+.ov-blob--1 { width:640px;height:640px; background:radial-gradient(circle,rgba(255,100,130,.52),transparent 70%); top:-200px;left:-160px; animation:ob1 23s ease-in-out infinite; }
+.ov-blob--2 { width:700px;height:700px; background:radial-gradient(circle,rgba( 70,210,150,.44),transparent 70%); top:-250px;right:-210px; animation:ob2 29s ease-in-out infinite; }
+.ov-blob--3 { width:560px;height:560px; background:radial-gradient(circle,rgba(165,130,255,.44),transparent 70%); bottom:-160px;left:2%; animation:ob3 21s ease-in-out infinite; }
+.ov-blob--4 { width:580px;height:580px; background:radial-gradient(circle,rgba(255,165, 70,.44),transparent 70%); bottom:-180px;right:-100px; animation:ob4 26s ease-in-out infinite; }
+.ov-blob--5 { width:420px;height:420px; background:radial-gradient(circle,rgba(120,185,255,.36),transparent 70%); top:36%;left:30%; animation:ob5 18s ease-in-out infinite; }
+
+@keyframes ob1{0%,100%{transform:translate(0,0)scale(1)}33%{transform:translate(58px,38px)scale(1.11)}66%{transform:translate(-28px,75px)scale(.92)}}
+@keyframes ob2{0%,100%{transform:translate(0,0)scale(1)}33%{transform:translate(-48px,58px)scale(1.08)}66%{transform:translate(28px,-38px)scale(1.13)}}
+@keyframes ob3{0%,100%{transform:translate(0,0)scale(1)}50%{transform:translate(68px,-48px)scale(1.10)}}
+@keyframes ob4{0%,100%{transform:translate(0,0)scale(1)}50%{transform:translate(-58px,-68px)scale(1.11)}}
+@keyframes ob5{0%,100%{transform:translate(0,0)scale(1)}50%{transform:translate(38px,-28px)scale(1.14)}}
+
+/* Decorative grid */
+.ov-grid {
+  position:absolute;inset:0;pointer-events:none;
+  background:
+    linear-gradient(rgba(255,255,255,.12) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,255,255,.10) 1px,transparent 1px);
+  background-size:48px 48px;
+  mask-image:linear-gradient(to bottom,rgba(0,0,0,.28) 0%,transparent 70%);
+}
+
+/* ── Food items (shared base) ───────────────────────────────── */
+.ov-food {
+  position: absolute;
+  pointer-events: none;
+  will-change: transform;
+  display: flex; align-items: center; justify-content: center;
+  animation-fill-mode: backwards;
+}
+
+/* BEHIND glass — blurred, muted, large transparent PNG */
+.ov-food--bg {
+  z-index: 2;
+  width: clamp(130px, 15vw, 220px);
+  height: clamp(130px, 15vw, 220px);
+  background: none; border: none; border-radius: 0;
+  filter: blur(.8px) saturate(.92) opacity(.86);
+}
+.ov-food--bg img {
+  width: 100%; height: 100%;
+  object-fit: contain;
+  display: block;
+  filter: drop-shadow(0 12px 28px rgba(23,33,61,.12));
+}
+
+/* IN FRONT of glass — sharp, large transparent PNG */
+.ov-food--fg {
+  z-index: 8;
+  width: clamp(128px, 14vw, 218px);
+  height: clamp(128px, 14vw, 218px);
+  background: none; border: none; border-radius: 0;
+  transition: transform .25s ease;
+}
+.ov-food--fg img {
+  width: 100%; height: 100%;
+  object-fit: contain;
+  display: block;
+  filter: drop-shadow(0 18px 38px rgba(23,33,61,.18));
+}
+
+/* Hover — nhẹ nhàng scale */
+.ov-food--fg:hover {
+  transform: scale(1.08) rotate(-4deg) !important;
+}
+
+/* ── Food item positions ────────────────────────────────────── */
+
+/* — Behind glass — */
+.ov-food--bg1 { top: 7%;   left: 1.2%; animation: fpop .55s ease 1.9s backwards, ff1 5.4s ease-in-out 2.6s infinite; }
+.ov-food--bg2 { bottom:14%;left: 4%;   animation: fpop .55s ease 2.3s backwards, ff2 4.8s ease-in-out 3.1s infinite; }
+.ov-food--bg3 { top: 45%; right: 1%; animation: fpop .55s ease 2.7s backwards, ff3 6.0s ease-in-out 3.6s infinite; }
+.ov-food--bg4 { top: 1%;  right: 1%; animation: fpop .55s ease 3.1s backwards, ff4 5.2s ease-in-out 4.0s infinite; }
+
+/* — In front of glass — */
+.ov-food--fg1 { bottom: 2%; right: 1%; animation: fpop .6s cubic-bezier(.34,1.56,.64,1) 1.7s backwards, ff5 4.9s ease-in-out 2.4s infinite; }
+.ov-food--fg2 { bottom:22%;right:calc(39% + 120px); width:clamp(150px, 16vw, 250px); height:clamp(150px, 16vw, 250px);  animation: fpop .6s cubic-bezier(.34,1.56,.64,1) 2.1s backwards, ff6 5.6s ease-in-out 2.8s infinite; }
+.ov-food--fg3 { bottom:calc(24% - 15px);right:calc(2.5% + 110px); animation: fpop .6s cubic-bezier(.34,1.56,.64,1) 2.5s backwards, ff7 4.3s ease-in-out 3.2s infinite; }
+.ov-food--fg4 { bottom:7%; left:calc(10% + 100px); width:clamp(160px, 17vw, 260px); height:clamp(160px, 17vw, 260px); animation: fpop .6s cubic-bezier(.34,1.56,.64,1) 2.9s backwards, ff8 5.8s ease-in-out 3.6s infinite; }
+
+@keyframes fpop{from{opacity:0;transform:scale(0)rotate(-25deg)}to{opacity:1;transform:scale(1)rotate(0)}}
+
+@keyframes ff1{0%,100%{transform:translateY(0)rotate(-9deg)}50%{transform:translateY(-22px)rotate(6deg)}}
+@keyframes ff2{0%,100%{transform:translateY(-8px)rotate(9deg)}50%{transform:translateY(16px)rotate(-6deg)}}
+@keyframes ff3{0%,100%{transform:translateY(0)rotate(5deg)}50%{transform:translateY(-26px)rotate(-7deg)}}
+@keyframes ff4{0%,100%{transform:translateY(-5px)rotate(-7deg)}50%{transform:translateY(18px)rotate(9deg)}}
+@keyframes ff5{0%,100%{transform:translateY(0)rotate(-11deg)}50%{transform:translateY(-20px)rotate(5deg)}}
+@keyframes ff6{0%,100%{transform:translateY(-7px)rotate(11deg)}50%{transform:translateY(15px)rotate(-5deg)}}
+@keyframes ff7{0%,100%{transform:translateY(0)rotate(6deg)}50%{transform:translateY(-24px)rotate(-8deg)}}
+@keyframes ff8{0%,100%{transform:translateY(-6px)rotate(-6deg)}50%{transform:translateY(17px)rotate(9deg)}}
+
+/* ── Glass box ──────────────────────────────────────────────── */
+.ov-glass {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: 84vw; height: 80vh;
+  z-index: 4;
+
+  /* Liquid glass effect — diagonal gradient so top-left is lighter */
+  background: linear-gradient(
+    135deg,
+    rgba(255,255,255,.30) 0%,
+    rgba(255,255,255,.10) 55%,
+    rgba(255,255,255,.18) 100%
+  );
+  backdrop-filter: blur(22px) saturate(190%) brightness(1.04);
+  -webkit-backdrop-filter: blur(22px) saturate(190%) brightness(1.04);
+  border: 1px solid rgba(255,255,255,.58);
+  border-radius: 40px;
+  box-shadow:
+    0 36px 90px rgba(23,33,61,.12),
+    inset 0  2px 0 rgba(255,255,255,.90),
+    inset 0 -1px 0 rgba(0,0,0,.04),
+    inset 1px 0 0 rgba(255,255,255,.60);
+
+  animation: glass-appear .85s cubic-bezier(.22,1,.36,1) .25s backwards;
+}
+@keyframes glass-appear{
+  from{opacity:0;transform:translate(-50%,-50%)scale(.96);filter:blur(4px)}
+  to  {opacity:1;transform:translate(-50%,-50%)scale(1);  filter:blur(0)}
+}
+
+/* Inner top-edge highlight (glass rim) */
+.ov-glass::before {
+  content: '';
+  position: absolute; top:0;left:10%;right:10%;
+  height: 1.5px;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,.90), transparent);
+  border-radius: 0 0 40px 40px;
+}
+
+/* Logo inside glass */
+.ov-glass__logo {
+  position: absolute;
+  top: 38px; left: 0;
+  width: clamp(220px, 20vw, 330px);
+  filter: drop-shadow(0 8px 20px rgba(23,33,61,.14));
+  animation: logo-slide .9s cubic-bezier(.34,1.56,.64,1) .55s backwards;
+}
+.ov-glass__logo img { width:100%;height:auto;object-fit:contain; }
+@keyframes logo-slide{from{opacity:0;transform:translateY(-18px)scale(.9)}to{opacity:1;transform:translateY(0)scale(1)}}
+
+/* Tagline copy — vertically centered in the glass */
+.ov-glass__copy {
+  position: absolute;
+  top: 56%;
+  transform: translateY(-50%);
+  left: 50px;
+  max-width: 46%;
+}
+
+.ov-glass__tagline {
+  display: block;
+  font-family: 'Baloo 2', 'Plus Jakarta Sans', sans-serif;
+  font-weight: 800;
+  font-size: clamp(2.6rem, 5.6vw, 7rem);
+  line-height: 1.0;
+  letter-spacing: -0.02em;
+  animation-fill-mode: backwards;
+}
+.ov-glass__tagline--1 {
+  color: #17213d;
+  animation: tag-in .75s cubic-bezier(.34,1.56,.64,1) .75s backwards;
+}
+.ov-glass__tagline--2 {
+  color: #FF4D8D;
+  margin-top: .05em;
+  animation: tag-in .75s cubic-bezier(.34,1.56,.64,1) .95s backwards;
+}
+@keyframes tag-in{from{opacity:0;transform:translateX(-28px)}to{opacity:1;transform:translateX(0)}}
+
+.ov-glass__cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: clamp(1rem, 2vw, 1.4rem);
+  padding: 0.85rem 1.45rem;
+  border: 1px solid rgba(255,255,255,.78);
+  border-radius: 999px;
+  background: linear-gradient(135deg, #ff4d8d, #a78bfa);
+  color: #fff;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: clamp(.9rem, 1vw, 1rem);
+  font-weight: 900;
+  box-shadow: 0 18px 42px rgba(255,77,141,.28), inset 0 1px 0 rgba(255,255,255,.52);
+  animation: tag-in .75s cubic-bezier(.34,1.56,.64,1) 1.12s backwards;
+}
+
+.ov-glass__cta:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 22px 52px rgba(255,77,141,.34), inset 0 1px 0 rgba(255,255,255,.62);
+}
+
+/* ── Man image ──────────────────────────────────────────────── */
+/* Outer: anchored right + rise-in */
+.ov-man {
+  position: absolute;
+  top: 50%;
+  right: calc(8vw + 120px);
+  z-index: 6;
+  /* vh-based width → scale đúng theo chiều cao box (80vh) */
+  width: clamp(260px, 46vh, 720px);
+  pointer-events: none;
+  /* translateY(-50%) đặt trong keyframe để không conflict với animation */
+  animation: man-rise .9s cubic-bezier(.22,1,.36,1) .4s both;
+  will-change: transform;
+}
+.ov-man img {
+  width: 100%; height: auto; display: block;
+  filter: drop-shadow(0 24px 48px rgba(23,33,61,.22));
+}
+@keyframes man-rise{
+  from{opacity:0;transform:translateY(calc(-50% + 44px))}
+  to  {opacity:1;transform:translateY(-50%)}
+}
+
+/* Inner: idle float */
+.ov-man__inner {
+  animation: man-float 5.5s ease-in-out 1.4s infinite;
+}
+@keyframes man-float{
+  0%,100%{transform:translateY(0)   rotate(0deg)}
+  25%    {transform:translateY(-8px) rotate(-.5deg)}
+  75%    {transform:translateY(-14px)rotate( .5deg)}
+}
+
+/* ── Chat bubbles ───────────────────────────────────────────── */
+.ov-chat {
+  position: absolute;
+  z-index: 7;
+  max-width: clamp(175px, 19vw, 270px);
+  padding: 11px 15px; gap: 10px;
+  display: flex; align-items: flex-start;
+  border: 1px solid rgba(255,255,255,.84);
+  border-radius: 22px;
+  background: rgba(255,255,255,.84);
+  backdrop-filter: blur(22px) saturate(175%);
+  -webkit-backdrop-filter: blur(22px) saturate(175%);
+  box-shadow:
+    0 18px 48px rgba(23,33,61,.11),
+    inset 0 1.5px 0 rgba(255,255,255,.94);
+  font-size: clamp(.74rem,.92vw,.87rem);
+  font-weight: 700; color:#17213d; line-height:1.45;
+  animation-fill-mode: backwards;
+  will-change: transform;
+  cursor: default;
+}
+
+/* Subtle top highlight */
+.ov-chat::before {
+  content:''; position:absolute;
+  top:0;left:16px;right:16px;height:2px;
+  background:linear-gradient(90deg,rgba(255,77,141,.5),rgba(167,139,250,.5));
+  opacity:0; transition:opacity .2s;
+}
+.ov-chat:hover::before{opacity:1}
+.ov-chat:hover{box-shadow:0 22px 56px rgba(23,33,61,.15),inset 0 1.5px 0 rgba(255,255,255,.96)}
+
+.ov-chat__av {
+  width:30px;height:30px;border-radius:50%;
+  display:grid;place-items:center;font-size:1rem;flex-shrink:0;
+  background:linear-gradient(135deg,rgba(255,77,141,.14),rgba(167,139,250,.14));
+  border:1px solid rgba(255,255,255,.74);
+}
+
+/*
+  Chat bubble positions — clustered around the man (right side of screen).
+  ─────────────────────────────────────────────────────────────────────────
+  Placeholder text here. When anh provides PNG files for chat bubbles,
+  replace these <div class="ov-chat ..."> blocks with:
+    <img src="/images/chat-bubble-01.png" class="ov-chat-img ov-chat-img--1" />
+  And add matching CSS for .ov-chat-img positioning.
+*/
+
+/* Bubble near man's head — top-left of man */
+.ov-chat--1 {
+  top: 8%; right: 41%;
+  animation: cpop .62s cubic-bezier(.34,1.56,.64,1) .6s backwards, cf1 4.6s ease-in-out 1.3s infinite;
+}
+/* Bubble top-right */
+.ov-chat--2 {
+  top: 24%; right: 10%;
+  animation: cpop .62s cubic-bezier(.34,1.56,.64,1) .9s backwards, cf2 5.3s ease-in-out 1.6s infinite;
+}
+/* Bubble mid-right of man */
+.ov-chat--3 {
+  top: 47%; right: 8%;
+  animation: cpop .62s cubic-bezier(.34,1.56,.64,1) 1.2s backwards, cf3 4.1s ease-in-out 1.9s infinite;
+}
+/* Bubble below man (between man and scroll cue) */
+.ov-chat--4 {
+  top: 22%; right: calc(52% - 20px);
+  animation: cpop .62s cubic-bezier(.34,1.56,.64,1) 1.5s backwards, cf4 5.0s ease-in-out 2.2s infinite;
+}
+
+.ov-chat-img {
+  position: absolute;
+  z-index: 7;
+  width: clamp(220px, 21vw, 340px);
+  height: auto;
+  pointer-events: none;
+  filter: drop-shadow(0 18px 42px rgba(23,33,61,.16));
+}
+.ov-chat-img--1 {
+  top: calc(3% - 20px);
+  right: calc(35% - 30px);
+  animation: cpop .62s cubic-bezier(.34,1.56,.64,1) .6s backwards, cf4 5.0s ease-in-out 1.3s infinite;
+}
+.ov-chat-img--2 {
+  top: 34%;
+  right: calc(5% - 10px);
+  width: clamp(205px, 19.5vw, 315px);
+  animation: cpop .62s cubic-bezier(.34,1.56,.64,1) .9s backwards, cf3 4.1s ease-in-out 1.6s infinite;
+}
+.ov-chat-img--3 {
+  top: calc(32% + 30px);
+  right: 34%;
+  animation: cpop .62s cubic-bezier(.34,1.56,.64,1) 1.2s backwards, cf1 4.6s ease-in-out 1.9s infinite;
+}
+.ov-chat-img--4 {
+  top: calc(18% - 50px);
+  right: 5%;
+  animation: cpop .62s cubic-bezier(.34,1.56,.64,1) 1.5s backwards, cf2 5.3s ease-in-out 2.2s infinite;
+}
+
+@keyframes cpop{from{opacity:0;transform:scale(.70)translateY(16px)}to{opacity:1;transform:scale(1)translateY(0)}}
+@keyframes cf1{0%,100%{transform:translateY(0)rotate(-1.6deg)}50%{transform:translateY(-15px)rotate(1.1deg)}}
+@keyframes cf2{0%,100%{transform:translateY(-6px)rotate(1.1deg)}50%{transform:translateY(12px)rotate(-1.6deg)}}
+@keyframes cf3{0%,100%{transform:translateY(0)rotate(.9deg)}50%{transform:translateY(-19px)rotate(-.9deg)}}
+@keyframes cf4{0%,100%{transform:translateY(-4px)rotate(-1.2deg)}50%{transform:translateY(14px)rotate(1.3deg)}}
+
+/* ── Scroll cue (bottom-center) ─────────────────────────────── */
+.ov-scroll {
+  position: absolute;
+  bottom: 3vh; left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+  display: flex; flex-direction: column; align-items: center; gap: 9px;
+  padding: .9rem 1.5rem; cursor: pointer;
+  border: none; background: none; font-family: inherit;
+  animation: scroll-appear .85s ease 2.6s backwards;
+  -webkit-tap-highlight-color: transparent;
+  transition: transform .22s ease;
+}
+.ov-scroll:hover { transform: translateX(-50%) translateY(4px); }
+@keyframes scroll-appear{from{opacity:0;transform:translateX(-50%)translateY(16px)}to{opacity:1;transform:translateX(-50%)translateY(0)}}
+
+.ov-scroll__mouse {
+  width:26px; height:44px;
+  border:2.5px solid rgba(23,33,61,.36); border-radius:13px;
+  display:flex; justify-content:center; padding-top:7px;
+  transition:border-color .2s;
+  animation: mouse-bob 2.8s ease-in-out 3.1s infinite;
+}
+.ov-scroll:hover .ov-scroll__mouse{border-color:rgba(255,77,141,.55)}
+@keyframes mouse-bob{0%,100%{transform:translateY(0)}50%{transform:translateY(5px)}}
+
+.ov-scroll__wheel {
+  width:4px;height:9px;
+  background:rgba(23,33,61,.46);border-radius:2px;
+  animation:wheel-anim 2.8s ease-in-out 3.1s infinite;
+}
+@keyframes wheel-anim{0%{opacity:1;transform:translateY(0)}60%{opacity:.2;transform:translateY(10px)}100%{opacity:1;transform:translateY(0)}}
+
+.ov-scroll__label {
+  font-size:.78rem;font-weight:800;
+  color:rgba(23,33,61,.54);letter-spacing:.07em;text-transform:uppercase;
+}
+
+/* ── Mouse parallax (set by JS) ─────────────────────────────── */
+[data-px] {
+  transition: translate .12s linear;
+  will-change: translate;
+}
+
+/* ── Dismiss animations ─────────────────────────────────────── */
+.is-scattering {
+  animation: scatter-go var(--sc-dur,.44s) cubic-bezier(.36,0,.66,-.56) var(--sc-del,0s) forwards !important;
+}
+@keyframes scatter-go {
+  to { transform:translate(var(--dx,80px),var(--dy,-120px)) rotate(var(--dr,30deg)) scale(.25); opacity:0; }
+}
+
+/* Man scatter */
+.ov-man.is-scattering {
+  animation: man-scatter var(--sc-dur,.5s) ease var(--sc-del,0s) forwards !important;
+}
+@keyframes man-scatter {
+  to { transform:translateY(calc(-50% - 60px)) scale(.85); opacity:0; }
+}
+
+/* Full overlay slide-up (phase 2) */
+.ov--out {
+  animation: ov-exit .92s cubic-bezier(.76,0,.24,1) forwards !important;
+}
+@keyframes ov-exit {
+  0%  { transform:translateY(0);      opacity:1; filter:blur(0); }
+  68% {                               opacity:1; filter:blur(0); }
+  100%{ transform:translateY(-100vh); opacity:0; filter:blur(10px); }
+}
+
+/* ── Tablet (≤1024px) ───────────────────────────────────────── */
+@media (max-width: 1024px) {
+  .ov-glass { width:90vw; }
+  .ov-glass__copy { max-width: 42%; }
+  .ov-man { right:calc(5vw + 90px); width:clamp(230px, 40vh, 580px); }
+  .ov-food--bg2,.ov-food--bg4,.ov-food--fg3 { display:none; }
+}
+
+/* ── Keyframes used by mobile intro ─────────────────────────── */
+@keyframes ov-glass-mob { from{opacity:0} to{opacity:1} }
+@keyframes man-rise-mob {
+  from { opacity:0; transform:translate(-50%,calc(-50% + 22px)); }
+  to   { opacity:1; transform:translate(-50%,-50%); }
+}
+@keyframes man-scatter-mob {
+  to { transform:translate(-50%,calc(-50% - 60px)) scale(.85); opacity:0; }
+}
+
+/* ── Mobile intro (≤760px) ──────────────────────────────────── */
+@media (max-width: 760px) {
+
+  /* 1. Hide all food items & desktop scroll cue */
+  .ov-food   { display: none !important; }
+  .ov-scroll { display: none; }
+
+  /* 2. Glass: transparent full-screen container */
+  .ov-glass {
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    transform: none;
+    border-radius: 0; border: none;
+    background: none;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    box-shadow: none;
+    animation: ov-glass-mob .4s ease .15s both;
+  }
+  /* Inner top highlight — off on mobile */
+  .ov-glass::before { display: none; }
+
+  /* 3. Logo: centred at top */
+  .ov-glass__logo {
+    position: absolute;
+    top: 36px; left: 50%;
+    transform: translateX(-50%);
+    width: clamp(150px, 46vw, 210px);
+    height: auto;
+  }
+
+  /* 4. Taglines: hidden on mobile (user spec) */
+  .ov-glass__tagline { display: none; }
+
+  /* 5. CTA "Xực Ngay" button: pinned at bottom-centre */
+  .ov-glass__copy {
+    position: absolute;
+    bottom: clamp(36px, 7vh, 64px);
+    left: 50%; transform: translateX(-50%);
+    max-width: 100%; text-align: center;
+    animation: tag-in .6s cubic-bezier(.34,1.56,.64,1) 1.1s both;
+  }
+  .ov-glass__cta {
+    width: clamp(210px, 62vw, 280px);
+    margin-top: 0;
+    font-size: 1.05rem;
+  }
+
+  /* 6. Man: centred on screen */
+  .ov-man {
+    top: 50%; left: 50%;
+    right: auto;
+    width: clamp(165px, 50vw, 240px);
+    animation: man-rise-mob .9s cubic-bezier(.22,1,.36,1) .4s both;
+  }
+  /* Override scatter to match new transform */
+  .ov-man.is-scattering {
+    animation: man-scatter-mob var(--sc-dur,.5s) ease var(--sc-del,0s) forwards !important;
+  }
+
+  /* 7. Chat images: 2 left + 2 right of the man */
+  .ov-chat-img {
+    width: clamp(110px, 33vw, 170px);
+  }
+  /* Left column — top */
+  .ov-chat-img--1 { top: 26%; left: 3%;  right: auto; }
+  /* Left column — bottom */
+  .ov-chat-img--3 { top: 50%; left: 2%;  right: auto; }
+  /* Right column — top */
+  .ov-chat-img--4 { top: 24%; right: 3%; left: auto; }
+  /* Right column — bottom */
+  .ov-chat-img--2 { top: 48%; right: 3%; left: auto; }
+}
+</style>
+
+<!-- ================================================================
+     RESTAURANT MODAL STYLES
+     ================================================================ -->
+<style is:global>
+
+/* ── Overlay backdrop ───────────────────────────────────────── */
+.rmodal-overlay {
+  position: fixed; inset: 0; z-index: 8888;
+  background: rgba(10, 15, 30, 0.60);
+  backdrop-filter: blur(14px) saturate(120%);
+  -webkit-backdrop-filter: blur(14px) saturate(120%);
+  display: none;
+  align-items: center; justify-content: center;
+  padding: 24px 20px;
+  overflow-y: auto;
+}
+.rmodal-overlay.is-open {
+  display: flex;
+  animation: rmo-in .22s ease forwards;
+}
+@keyframes rmo-in { from{opacity:0} to{opacity:1} }
+
+/* ── Panel ──────────────────────────────────────────────────── */
+.rmodal-panel {
+  display: none;
+  width: 100%; max-width: 660px;
+  margin: auto;
+  background: #fff;
+  border-radius: 28px;
+  overflow: hidden;
+  box-shadow:
+    0 48px 120px rgba(10,15,30,.34),
+    0 8px 32px rgba(10,15,30,.12);
+}
+.rmodal-panel.is-active {
+  display: block;
+  animation: rmp-in .38s cubic-bezier(.34,1.46,.64,1) forwards;
+}
+@keyframes rmp-in {
+  from { opacity:0; transform:translateY(32px) scale(.97); }
+  to   { opacity:1; transform:translateY(0)    scale(1); }
+}
+
+/* ── Hero image ─────────────────────────────────────────────── */
+.rmodal-hero {
+  position: relative;
+  width: 100%; aspect-ratio: 16/9;
+  overflow: hidden;
+  background: #eef5f1;
+}
+.rmodal-hero img {
+  width: 100%; height: 100%; object-fit: cover;
+  display: block;
+}
+.rmodal-hero::after {
+  content: '';
+  position: absolute; inset: auto 0 0 0; height: 80px;
+  background: linear-gradient(to top, #fff, transparent);
+}
+
+/* ── Close button ───────────────────────────────────────────── */
+.rmodal-close {
+  position: absolute;
+  top: 16px; right: 16px; z-index: 10;
+  width: 38px; height: 38px; border-radius: 50%;
+  border: none; cursor: pointer;
+  background: rgba(255,255,255,.90);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: 0 4px 16px rgba(10,15,30,.18);
+  display: flex; align-items: center; justify-content: center;
+  color: #17213d; font-size: 1.1rem; font-weight: 600;
+  transition: background .18s, transform .18s;
+  line-height: 1;
+}
+.rmodal-close:hover { background: #fff; transform: scale(1.08); }
+
+/* ── Body ───────────────────────────────────────────────────── */
+.rmodal-body {
+  padding: 0 32px 36px;
+  position: relative;
+}
+
+/* ── Title ──────────────────────────────────────────────────── */
+.rmodal-title {
+  font-family: var(--font-display);
+  font-size: clamp(1.55rem, 3vw, 2rem);
+  font-weight: 800;
+  color: var(--color-ink);
+  line-height: 1.2;
+  margin-bottom: 12px;
+}
+
+/* ── Meta chips row ─────────────────────────────────────────── */
+.rmodal-meta {
+  display: flex; flex-wrap: wrap; gap: 8px;
+  margin-bottom: 16px;
+}
+.rmodal-meta-chip {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 5px 11px;
+  background: rgba(23,33,61,.06);
+  border-radius: var(--radius-pill);
+  font-size: .78rem; font-weight: 600;
+  color: var(--color-ink-soft);
+  text-decoration: none;
+}
+.rmodal-meta-chip--link { transition: background .18s, color .18s; }
+.rmodal-meta-chip--link:hover {
+  background: rgba(255,77,141,.10);
+  color: var(--color-pink);
+}
+
+/* ── Score row (stars + price) ──────────────────────────────── */
+.rmodal-score {
+  display: flex; align-items: center; gap: 16px;
+  margin-bottom: 18px;
+}
+.rmodal-stars {
+  font-size: 1.15rem;
+  letter-spacing: .04em;
+}
+.rmodal-stars-filled { color: var(--color-butter); }
+.rmodal-stars-empty  { color: rgba(23,33,61,.18); }
+.rmodal-price {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 5px 14px;
+  background: rgba(77,212,172,.14);
+  border-radius: var(--radius-pill);
+  font-size: .82rem; font-weight: 700;
+  color: var(--color-mint-dark);
+}
+
+/* ── Meal tag chips ─────────────────────────────────────────── */
+.rmodal-tags {
+  display: flex; flex-wrap: wrap; gap: 7px;
+  margin-bottom: 12px;
+}
+.rmodal-tag {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 5px 12px;
+  border-radius: var(--radius-pill);
+  font-size: .78rem; font-weight: 700;
+  background: var(--tag-bg);
+  color: var(--tag-color);
+}
+
+/* ── Signature dishes ───────────────────────────────────────── */
+.rmodal-dishes {
+  display: flex; flex-wrap: wrap; gap: 7px;
+  margin-bottom: 24px;
+}
+.rmodal-dish {
+  display: inline-flex; align-items: center;
+  padding: 5px 13px;
+  border-radius: var(--radius-pill);
+  border: 1.5px solid rgba(23,33,61,.14);
+  font-size: .78rem; font-weight: 600;
+  color: var(--color-ink-soft);
+}
+
+/* ── Divider ────────────────────────────────────────────────── */
+.rmodal-divider {
+  border: none; border-top: 1px solid rgba(23,33,61,.08);
+  margin: 0 0 24px;
+}
+
+/* ── Prose (markdown body) ──────────────────────────────────── */
+.rmodal-prose {
+  font-size: .94rem;
+  line-height: 1.75;
+  color: var(--color-ink);
+  margin-bottom: 28px;
+}
+.rmodal-prose h2 {
+  font-size: 1rem; font-weight: 800;
+  color: var(--color-ink);
+  margin: 22px 0 8px;
+  padding-bottom: 6px;
+  border-bottom: 2px solid rgba(255,77,141,.18);
+}
+.rmodal-prose p  { margin-bottom: .85em; }
+.rmodal-prose ul,
+.rmodal-prose ol { padding-left: 1.3em; margin-bottom: .85em; }
+.rmodal-prose li { margin-bottom: .3em; }
+.rmodal-prose strong { font-weight: 700; color: var(--color-ink); }
+
+/* ── Photo gallery ──────────────────────────────────────────── */
+.rmodal-gallery-label {
+  font-size: .75rem; font-weight: 800;
+  color: var(--color-muted);
+  text-transform: uppercase; letter-spacing: .08em;
+  margin-bottom: 10px;
+}
+.rmodal-gallery {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 4px;
+  border-radius: 16px;
+  overflow: hidden;
+}
+.rmodal-gallery-item {
+  aspect-ratio: 1;
+  overflow: hidden;
+  background: rgba(23,33,61,.06);
+  cursor: pointer;
+}
+.rmodal-gallery-item img {
+  width: 100%; height: 100%;
+  object-fit: cover; display: block;
+  transition: transform .3s ease;
+}
+.rmodal-gallery-item:hover img { transform: scale(1.07); }
+
+/* ── Lightbox ────────────────────────────────────────────────── */
+.lightbox {
+  display: none;
+  position: fixed; inset: 0; z-index: 9999;
+  background: rgba(0,0,0,.92);
+  align-items: center; justify-content: center;
+}
+.lightbox.is-open { display: flex; }
+.lightbox-img-wrap {
+  display: flex; align-items: center; justify-content: center;
+  max-width: 92vw; max-height: 88vh;
+}
+#lightbox-img {
+  max-width: 92vw; max-height: 88vh;
+  object-fit: contain;
+  border-radius: 12px;
+  box-shadow: 0 8px 48px rgba(0,0,0,.6);
+  user-select: none;
+}
+.lightbox-close {
+  position: fixed; top: 18px; right: 20px;
+  background: rgba(255,255,255,.14); border: none;
+  color: #fff; font-size: 1.4rem; line-height: 1;
+  width: 42px; height: 42px; border-radius: 50%;
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  transition: background .18s;
+}
+.lightbox-close:hover { background: rgba(255,255,255,.28); }
+.lightbox-prev,
+.lightbox-next {
+  position: fixed; top: 50%; transform: translateY(-50%);
+  background: rgba(255,255,255,.14); border: none;
+  color: #fff; font-size: 2.2rem; line-height: 1;
+  width: 48px; height: 64px; border-radius: 10px;
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  transition: background .18s;
+}
+.lightbox-prev { left: 14px; }
+.lightbox-next { right: 14px; }
+.lightbox-prev:hover,
+.lightbox-next:hover { background: rgba(255,255,255,.28); }
+.lightbox-prev.is-hidden,
+.lightbox-next.is-hidden { opacity: 0; pointer-events: none; }
+.lightbox-counter {
+  position: fixed; bottom: 18px; left: 50%; transform: translateX(-50%);
+  color: rgba(255,255,255,.6); font-size: .8rem; font-weight: 600;
+  letter-spacing: .06em;
+}
+
+/* ── Responsive ─────────────────────────────────────────────── */
+@media (max-width: 600px) {
+  .rmodal-overlay { padding: 0; align-items: flex-end; }
+  .rmodal-panel {
+    border-radius: 24px 24px 0 0;
+    max-height: 94vh;
+    overflow-y: auto;
+  }
+  .rmodal-body { padding: 0 20px 30px; }
+  .rmodal-title { font-size: 1.4rem; }
+  .rmodal-gallery { grid-template-columns: repeat(3, 1fr); }
+}
+</style>
+
+<BaseLayout title="Cenix's Food Station — quán ngon đã đi" activeNav="home">
+
+  <!-- ================================================================
+       INTRO OVERLAY
+       ================================================================ -->
+  <div id="intro-ov" class="ov" role="dialog" aria-label="Cenix Food Station — Giới thiệu">
+
+    <!-- ── Z1: Background blobs & grid ── -->
+    <div class="ov-blob ov-blob--1" aria-hidden="true"></div>
+    <div class="ov-blob ov-blob--2" aria-hidden="true"></div>
+    <div class="ov-blob ov-blob--3" aria-hidden="true"></div>
+    <div class="ov-blob ov-blob--4" aria-hidden="true"></div>
+    <div class="ov-blob ov-blob--5" aria-hidden="true"></div>
+    <div class="ov-grid"            aria-hidden="true"></div>
+
+    <!-- ── Z2: Food items BEHIND glass (blurred through glass) ── -->
+    <div class="ov-food ov-food--bg ov-food--bg1" aria-hidden="true" data-px="0.07"><img src="/images/foods-intro/03.png" alt="" /></div>
+    <div class="ov-food ov-food--bg ov-food--bg2" aria-hidden="true" data-px="0.06"><img src="/images/foods-intro/06.png" alt="" /></div>
+    <div class="ov-food ov-food--bg ov-food--bg3" aria-hidden="true" data-px="0.05"><img src="/images/foods-intro/07.png" alt="" /></div>
+    <div class="ov-food ov-food--bg ov-food--bg4" aria-hidden="true" data-px="0.08"><img src="/images/foods-intro/04.png" alt="" /></div>
+
+    <!-- ── Z4: Frosted glass panel ── -->
+    <div class="ov-glass">
+
+      <!-- Logo -->
+      <div class="ov-glass__logo" data-px="0.018">
+        <img
+          src="/images/cenix%20food%20station.png"
+          alt="Cenix Food Station"
+          width="210" height="90"
+          fetchpriority="high"
+        />
+      </div>
+
+      <!-- Display tagline -->
+      <div class="ov-glass__copy">
+        <span class="ov-glass__tagline ov-glass__tagline--1">Hỏi hỏi quài!</span>
+        <span class="ov-glass__tagline ov-glass__tagline--2">Lên coi đi</span>
+        <button class="ov-glass__cta" type="button" id="ov-xuc-btn">
+          Xực Ngay
+        </button>
+      </div>
+
+    </div>
+    <!-- /glass -->
+
+    <!-- ── Z6: Man image (real PNG, right side) ── -->
+    <div class="ov-man" data-px="0.020">
+      <div class="ov-man__inner">
+        <img
+          src="/images/cenix%20food%20-%2001.png"
+          alt="Anh Cenix"
+          width="540" height="810"
+          fetchpriority="high"
+        />
+      </div>
+    </div>
+
+    <!-- ── Z7: Chat bubble PNGs (floating around man) ── -->
+    <img class="ov-chat-img ov-chat-img--1" src="/images/bubble-chat/1.png" alt="" aria-hidden="true" data-px="0.055" />
+    <img class="ov-chat-img ov-chat-img--2" src="/images/bubble-chat/2.png" alt="" aria-hidden="true" data-px="0.045" />
+    <img class="ov-chat-img ov-chat-img--3" src="/images/bubble-chat/3.png" alt="" aria-hidden="true" data-px="0.05" />
+    <img class="ov-chat-img ov-chat-img--4" src="/images/bubble-chat/4.png" alt="" aria-hidden="true" data-px="0.06" />
+
+    <!-- ── Z8: Food items IN FRONT of glass (sharp, floating) ── -->
+    <div class="ov-food ov-food--fg ov-food--fg1" aria-hidden="true" data-px="0.07"><img src="/images/foods-intro/02.png" alt="" /></div>
+    <div class="ov-food ov-food--fg ov-food--fg2" aria-hidden="true" data-px="0.06"><img src="/images/foods-intro/01.png" alt="" /></div>
+    <div class="ov-food ov-food--fg ov-food--fg4" aria-hidden="true" data-px="0.05"><img src="/images/foods-intro/08.png" alt="" /></div>
+
+    <!-- ── Z10: Scroll cue ── -->
+    <button
+      class="ov-scroll"
+      id="ov-explore-btn"
+      aria-label="Khám phá trang web — cuộn xuống"
+    >
+      <div class="ov-scroll__mouse">
+        <div class="ov-scroll__wheel"></div>
+      </div>
+      <span class="ov-scroll__label">Khám phá ngay</span>
+    </button>
+
+  </div><!-- /INTRO OVERLAY -->
+
+
+  <!-- ================================================================
+       HOMEPAGE CONTENT
+       ================================================================ -->
+  <Hero neighborhoods={neighborhoods} />
+
+  <section class="restaurants">
+    <div class="container">
+      {restaurants.length === 0 ? (
+        <div class="empty-state">
+          <span class="empty-state-emoji" aria-hidden="true">🍽️</span>
+          <h2 class="empty-state-title">Chưa có quán nào</h2>
+          <p class="empty-state-text">
+            Thêm folder mới dưới <code>assets/restaurants/</code> với file <code>restaurant.md</code> + ảnh <code>cover.jpg</code> để bắt đầu.
+          </p>
+        </div>
+      ) : (
+        <>
+          <div class="content-rows" id="explore" data-content-rows>
+            {contentRows.map((row) => {
+              /* Pre-filter cards for this row's permanent filter */
+              const rowCards = (() => {
+                if (row.filter === 'explore_featured') return restaurants.filter(r => r.data.explore_featured);
+                if (row.filter === 'dalat')            return restaurants.filter(r => getCategory(r) === 'dalat');
+                if (row.filter === 'cook')             return restaurants.filter(r => r.data.type === 'cook');
+                return restaurants;
+              })();
+
+              return (
+                <section class="content-row" data-content-row={row.id} data-row-filter={row.filter}>
+                  <div class="content-row-head">
+                    <h3 data-row-title={row.id}>{row.title}</h3>
+                    {/* Desktop: Xem thêm in header */}
+                    <button class="content-row-next content-row-next--desktop" type="button" aria-label={`Xem thêm ${row.title}`}>
+                      Xem thêm →
+                    </button>
+                  </div>
+                  <div class="content-row-track">
+                    {rowCards.slice(0, 10).map((r) => (
+                      <RestaurantCard restaurant={r} folder={folderSlug(r.id)} mealTags={getMealTags(r)} />
+                    ))}
+                    {/* Mobile: Xem thêm as last card in track */}
+                    <button
+                      class="content-row-more"
+                      type="button"
+                      aria-label={`Xem thêm ${row.title}`}
+                      data-row-more={row.filter}
+                    >
+                      <span class="content-row-more__arrow">→</span>
+                      <span class="content-row-more__label">Xem<br/>thêm</span>
+                    </button>
+                  </div>
+                </section>
+              );
+            })}
+          </div>
+          <p class="no-results" data-no-results hidden>
+            Chưa có quán nào khớp bộ lọc này.
+          </p>
+        </>
+      )}
+    </div>
+  </section>
+
+
+  <!-- ================================================================
+       RESTAURANT MODALS
+       ================================================================ -->
+  <!-- Lightbox -->
+  <div id="lightbox" class="lightbox" aria-modal="true" role="dialog" aria-label="Xem ảnh lớn">
+    <button class="lightbox-close" aria-label="Đóng">✕</button>
+    <button class="lightbox-prev" aria-label="Ảnh trước">‹</button>
+    <button class="lightbox-next" aria-label="Ảnh sau">›</button>
+    <div class="lightbox-img-wrap">
+      <img id="lightbox-img" src="" alt="" />
+    </div>
+    <div class="lightbox-counter" id="lightbox-counter"></div>
+  </div>
+
+  <div id="rmodal-overlay" class="rmodal-overlay" aria-modal="true" role="dialog">
+
+    {restaurantsWithContent.map(({ r, Content, folder, category, catMeta, starRating, visitedLabel }) => {
+      const d = r.data;
+      const type         = d.type ?? 'restaurant';
+      const isRestaurant = type === 'restaurant';
+      const isCook       = type === 'cook';
+      const isCollect    = type === 'collect';
+      const filledStars  = '★'.repeat(starRating);
+      const emptyStars   = '☆'.repeat(5 - starRating);
+      const coverUrl     = `/restaurants/${folder}/cover.jpg`;
+      return (
+        <div class="rmodal-panel" id={`rmodal-restaurant-${d.slug}`} data-type={type}>
+
+          {/* Hero */}
+          <div class="rmodal-hero">
+            <img src={coverUrl} alt={d.name} loading="lazy" />
+            <button class="rmodal-close" type="button" aria-label="Đóng popup">✕</button>
+          </div>
+
+          {/* Body */}
+          <div class="rmodal-body">
+
+            {/* Category chip */}
+            {catMeta && (
+              <span class="rmodal-tag rmodal-type-chip" style={`--tag-bg:${catMeta.bg};--tag-color:${catMeta.color}`}>
+                {catMeta.icon} {catMeta.label}
+              </span>
+            )}
+
+            {/* Title */}
+            <h2 class="rmodal-title">{d.name}</h2>
+
+            {/* Restaurant-only: meta + score + dishes */}
+            {isRestaurant && (
+              <>
+                <div class="rmodal-meta">
+                  {visitedLabel && <span class="rmodal-meta-chip">🗓 {visitedLabel}</span>}
+                  {d.address    && <span class="rmodal-meta-chip">📍 {d.address}</span>}
+                  {d.neighborhood && <span class="rmodal-meta-chip">🏘 {d.neighborhood}</span>}
+                  {d.maps_url && (
+                    <a class="rmodal-meta-chip rmodal-meta-chip--link" href={d.maps_url} target="_blank" rel="noopener">
+                      🗺 Xem bản đồ
+                    </a>
+                  )}
+                </div>
+                <div class="rmodal-score">
+                  {starRating > 0 && (
+                    <span class="rmodal-stars" aria-label={`${starRating} trên 5 sao`}>
+                      <span class="rmodal-stars-filled">{filledStars}</span>
+                      <span class="rmodal-stars-empty">{emptyStars}</span>
+                    </span>
+                  )}
+                  {d.price_range && <span class="rmodal-price">₫ {d.price_range}</span>}
+                </div>
+                {d.signature_dishes.length > 0 && (
+                  <div class="rmodal-dishes">
+                    {d.signature_dishes.map((dish) => (
+                      <span class="rmodal-dish">🍽 {dish}</span>
+                    ))}
+                  </div>
+                )}
+              </>
+            )}
+
+            {/* Collect-only: link to source */}
+            {isCollect && d.social_url && (
+              <a class="rmodal-social-link" href={d.social_url} target="_blank" rel="noopener">
+                🔗 Xem bài gốc
+              </a>
+            )}
+
+            <hr class="rmodal-divider" />
+
+            {/* Tagline / intro (cook + collect) */}
+            {(isCook || isCollect) && d.tagline && (
+              <p class="rmodal-intro">{d.tagline}</p>
+            )}
+
+            {/* Markdown content */}
+            <div class="rmodal-prose">
+              <Content />
+            </div>
+
+            {/* Photo gallery */}
+            {d.photos.length > 0 && (
+              <>
+                <p class="rmodal-gallery-label">Hình ảnh</p>
+                <div class="rmodal-gallery">
+                  {d.photos.slice(0, 8).map((photo, idx) => (
+                    <div
+                      class="rmodal-gallery-item"
+                      data-lightbox-src={`/restaurants/${folder}/${photo}`}
+                      data-lightbox-idx={idx}
+                      data-lightbox-group={d.slug}
+                    >
+                      <img
+                        src={`/restaurants/${folder}/${photo}`}
+                        alt=""
+                        loading="lazy"
+                      />
+                    </div>
+                  ))}
+                </div>
+              </>
+            )}
+
+          </div>
+        </div>
+      );
+    })}
+
+  </div><!-- /rmodal-overlay -->
+
+
+  <!-- ================================================================
+       SCRIPTS
+       ================================================================ -->
+  <script>
+  /* ─────────────────────────────────────────────────────────────────
+     INTRO OVERLAY CONTROLLER
+  ───────────────────────────────────────────────────────────────── */
+  (function () {
+    const ov  = document.getElementById('intro-ov');
+    const btn = document.getElementById('ov-explore-btn');
+    const xucBtn = document.getElementById('ov-xuc-btn');
+    if (!ov) return;
+
+    /* ── Skip intro entirely on mobile (≤760px) ─────────────── */
+    if (window.innerWidth <= 760) {
+      ov.style.display = 'none';
+      return;
+    }
+
+    /* Lock body scroll */
+    document.body.style.overflow = 'hidden';
+
+    /* ── Mouse parallax ──────────────────────────────────────────
+       Each element with [data-px="N"] moves N fraction of cursor offset.
+       Uses CSS `translate` property, which composes safely with
+       keyframe animations on `transform`.
+    ──────────────────────────────────────────────────────────── */
+    const pxEls: NodeListOf<HTMLElement> = ov.querySelectorAll('[data-px]');
+    let mx = 0, my = 0, cx = 0, cy = 0;
+
+    window.addEventListener('mousemove', (e) => {
+      mx = (e as MouseEvent).clientX - window.innerWidth  / 2;
+      my = (e as MouseEvent).clientY - window.innerHeight / 2;
+    }, { passive: true });
+
+    let rafPx = 0;
+    function tickPx() {
+      cx += (mx - cx) * 0.07;
+      cy += (my - cy) * 0.07;
+      pxEls.forEach((el) => {
+        const d = parseFloat(el.dataset.px || '0');
+        el.style.translate = `${cx * d}px ${cy * d}px`;
+      });
+      rafPx = requestAnimationFrame(tickPx);
+    }
+    rafPx = requestAnimationFrame(tickPx);
+
+    /* ── Scroll-progress tilt (pre-dismiss feedback) ─────────────
+       As wheel delta accumulates, the glass panel tilts in 3D —
+       giving a satisfying "pulling" feel before dismiss fires.
+    ──────────────────────────────────────────────────────────── */
+    const glass  = ov.querySelector<HTMLElement>('.ov-glass');
+    const manEl  = ov.querySelector<HTMLElement>('.ov-man');
+    let scrollAcc = 0;
+    const DISMISS_AT = 110;
+
+    /* ── Dismiss sequence ────────────────────────────────────────
+       Phase 1 (~440ms): floating elements scatter outward.
+       Phase 2 (460ms+): overlay slides off-screen upward.
+    ──────────────────────────────────────────────────────────── */
+    let dismissed = false;
+
+    function dismiss() {
+      if (dismissed) return;
+      dismissed = true;
+
+      cancelAnimationFrame(rafPx);
+      document.body.style.overflow = '';
+
+      /* Scatter all floating elements */
+      const floaters = Array.from(
+        ov.querySelectorAll<HTMLElement>('.ov-chat, .ov-food')
+      );
+
+      const chatDirs: Record<string, [number, number]> = {
+        'ov-chat--1': [-200, -200],
+        'ov-chat--2': [ 240, -180],
+        'ov-chat--3': [ 280,  -80],
+        'ov-chat--4': [ 160,  180],
+      };
+
+      floaters.forEach((el, i) => {
+        let dx = 0, dy = 0, dr = 0;
+
+        const chatKey = Object.keys(chatDirs).find(k => el.classList.contains(k));
+        if (chatKey) {
+          [dx, dy] = chatDirs[chatKey];
+          dx += (Math.random() - .5) * 80;
+          dy += (Math.random() - .5) * 60;
+          dr = (Math.random() - .5) * 80;
+        } else {
+          /* Food items — radial random scatter */
+          const angle = Math.random() * Math.PI * 2;
+          const dist  = 180 + Math.random() * 200;
+          dx = Math.cos(angle) * dist;
+          dy = Math.sin(angle) * dist - 60;
+          dr = (Math.random() - .5) * 130;
+        }
+
+        el.style.setProperty('--dx',    `${dx}px`);
+        el.style.setProperty('--dy',    `${dy}px`);
+        el.style.setProperty('--dr',    `${dr}deg`);
+        el.style.setProperty('--sc-dur', '.40s');
+        el.style.setProperty('--sc-del', `${i * 0.026}s`);
+        el.classList.add('is-scattering');
+      });
+
+      /* Man fades out */
+      if (manEl) {
+        manEl.style.setProperty('--sc-dur', '.50s');
+        manEl.style.setProperty('--sc-del', '0.05s');
+        manEl.classList.add('is-scattering');
+      }
+
+      /* Glass panel fades slightly */
+      if (glass) {
+        glass.style.transition = 'opacity .35s ease .1s';
+        glass.style.opacity = '0';
+      }
+
+      /* Phase 2: slide overlay off-screen */
+      setTimeout(() => ov.classList.add('ov--out'), 460);
+
+      /* Phase 3: cleanup */
+      setTimeout(() => {
+        ov.style.display = 'none';
+        ov.removeAttribute('role');
+      }, 460 + 950);
+    }
+
+    /* ── Input listeners ─────────────────────────────────────── */
+
+    /* Wheel: progressive tilt then dismiss */
+    window.addEventListener('wheel', (e) => {
+      if (dismissed) return;
+      const delta = (e as WheelEvent).deltaY;
+      if (delta <= 0) { scrollAcc = Math.max(0, scrollAcc - 10); return; }
+
+      scrollAcc += delta;
+
+      /* Tilt glass as scroll-progress feedback */
+      if (glass) {
+        const t = Math.min(scrollAcc / DISMISS_AT, 1);
+        glass.style.transform =
+          `translate(-50%,-50%) perspective(900px) rotateX(${t * 5}deg) scale(${1 - t * 0.025})`;
+      }
+
+      if (scrollAcc >= DISMISS_AT) dismiss();
+    }, { passive: true });
+
+    /* Touch swipe-up */
+    let startY = 0;
+    window.addEventListener('touchstart', (e) => {
+      startY = (e as TouchEvent).touches[0].clientY;
+    }, { passive: true });
+    window.addEventListener('touchmove', (e) => {
+      if (startY - (e as TouchEvent).touches[0].clientY > 55) dismiss();
+    }, { passive: true });
+
+    /* Keyboard */
+    window.addEventListener('keydown', (e) => {
+      if (['ArrowDown', ' ', 'Enter', 'PageDown'].includes((e as KeyboardEvent).key)) {
+        e.preventDefault(); dismiss();
+      }
+    });
+
+    /* CTA button */
+    if (btn) btn.addEventListener('click', dismiss);
+    if (xucBtn) xucBtn.addEventListener('click', dismiss);
+
+  })();
+
+  /* ─────────────────────────────────────────────────────────────────
+     CONTENT AREA FILTER + BANNER STATE
+  ───────────────────────────────────────────────────────────────── */
+  const pageMeta: Record<string, { kicker: string; title: string; lines: string[] }> = {
+    all: {
+      kicker: 'Khám phá',
+      title: 'Quán nên lưu lại',
+      lines: ['Tui hay ăn nhất', 'Quán local ở Đà Lạt nè', 'Đồ ăn tui nấu'],
+    },
+    breakfast: {
+      kicker: 'Ăn sáng',
+      title: 'Quán ăn sáng',
+      lines: ['Tui hay ăn nhất', 'Quán Đà Lạt', 'Quán đại trà'],
+    },
+    dinner: {
+      kicker: 'Ăn tối',
+      title: 'Quán ăn tối',
+      lines: ['Tui hay ăn nhất', 'Quán Đà Lạt', 'Quán đại trà'],
+    },
+    drinks: {
+      kicker: 'Ăn nhậu',
+      title: 'Quán ăn nhậu',
+      lines: ['Tui hay nhậu', 'Quán Đà Lạt', 'Quán đại trà'],
+    },
+    snack: {
+      kicker: 'Ăn vặt',
+      title: 'Quán ăn vặt',
+      lines: ['Tui hay ăn', 'Quán Đà Lạt', 'Quán đại trà'],
+    },
+    dalat: {
+      kicker: 'Đà Lạt',
+      title: 'Quán local Đà Lạt',
+      lines: ['Phải thử khi lên', 'Cà phê chill', 'Ăn sáng Đà Lạt'],
+    },
+    cook: {
+      kicker: 'Cenix can Cook',
+      title: 'Đồ ăn tui nấu',
+      lines: ['Đồ tui nấu', 'Reels bếp núc'],
+    },
+    collect: {
+      kicker: 'Sưu tầm',
+      title: 'Bài hay sưu tầm',
+      lines: ['Bài post sưu tầm', 'Reels sưu tầm'],
+    },
+  };
+
+  const heroPages = (() => {
+    const el = document.querySelector<HTMLScriptElement>('[data-hero-pages]');
+    if (!el?.textContent) return [];
+    try { return JSON.parse(el.textContent) as Array<{ id: string; title: string; subtitle: string; image: string }>; }
+    catch { return []; }
+  })();
+
+  const state = { category: 'all', neighborhood: 'all' };
+  const cards       = document.querySelectorAll<HTMLElement>('.r-card');
+  const resultCount = document.querySelector<HTMLElement>('[data-result-count]');
+  const noResults   = document.querySelector<HTMLElement>('[data-no-results]');
+  const heroTitle    = document.querySelector<HTMLElement>('[data-hero-title]');
+  const heroSubtitle = document.querySelector<HTMLElement>('[data-hero-subtitle]');
+  const heroImage    = document.querySelector<HTMLImageElement>('[data-hero-image]');
+  const contentRows = document.querySelectorAll<HTMLElement>('[data-content-row]');
+
+  const apply = () => {
+    const visibleSlugs = new Set<string>();
+    cards.forEach((card) => {
+      const n    = card.dataset.neighborhood ?? '';
+      const tags = (card.dataset.mealTags ?? 'all').split(' ');
+      const show =
+        (state.category === 'all' || tags.includes(state.category)) &&
+        (state.neighborhood === 'all' || n === state.neighborhood);
+      card.style.display = show ? '' : 'none';
+      if (show) visibleSlugs.add(card.dataset.modal ?? card.textContent ?? '');
+    });
+    contentRows.forEach((row) => {
+      const visibleInRow = Array.from(row.querySelectorAll<HTMLElement>('.r-card'))
+        .some((card) => card.style.display !== 'none');
+      row.hidden = !visibleInRow;
+    });
+    const visible = visibleSlugs.size;
+    if (resultCount) resultCount.textContent = `${visible} quán`;
+    if (noResults)   noResults.hidden = visible !== 0;
+  };
+
+  const renderPageChrome = (value: string) => {
+    const meta = pageMeta[value] ?? pageMeta.all;
+    const hero = heroPages.find((item) => item.id === value) ?? heroPages[0];
+    if (heroTitle && hero) heroTitle.textContent = hero.title;
+    if (heroSubtitle && hero) heroSubtitle.textContent = hero.subtitle;
+    if (heroImage && hero) heroImage.src = hero.image;
+    meta.lines.forEach((line, index) => {
+      const row = document.querySelector<HTMLElement>(`[data-content-row="row-${index + 1}"]`);
+      const title = document.querySelector<HTMLElement>(`[data-row-title="row-${index + 1}"]`);
+      if (row) row.hidden = false;
+      if (title) title.textContent = line;
+    });
+    for (let i = meta.lines.length + 1; i <= 3; i += 1) {
+      const row = document.querySelector<HTMLElement>(`[data-content-row="row-${i}"]`);
+      if (row) row.hidden = true;
+    }
+  };
+
+  const setCategory = (value: string) => {
+    state.category = value;
+    document.querySelectorAll<HTMLButtonElement>('[data-sidebar-category]').forEach((c) =>
+      c.classList.toggle('active', c.dataset.sidebarCategory === value)
+    );
+    renderPageChrome(value);
+    apply();
+  };
+
+  document.querySelectorAll<HTMLButtonElement>('[data-sidebar-category]').forEach((item) =>
+    item.addEventListener('click', () => {
+      setCategory(item.dataset.sidebarCategory ?? 'all');
+    })
+  );
+  document.querySelector<HTMLSelectElement>('[data-location-select]')?.addEventListener('change', (e) => {
+    state.neighborhood = (e.currentTarget as HTMLSelectElement).value;
+    apply();
+  });
+  /* Desktop "Xem thêm" in header → scroll the track */
+  document.querySelectorAll<HTMLButtonElement>('.content-row-next--desktop').forEach((button) => {
+    button.addEventListener('click', () => {
+      const track = button.closest('.content-row')?.querySelector<HTMLElement>('.content-row-track');
+      if (!track) return;
+      track.scrollBy({ left: Math.round(track.clientWidth * 0.85), behavior: 'smooth' });
+    });
+  });
+
+  /* Mobile "Xem thêm" card at end of track → switch to that category filter */
+  document.querySelectorAll<HTMLButtonElement>('[data-row-more]').forEach((button) => {
+    button.addEventListener('click', () => {
+      const filter = button.dataset.rowMore ?? 'all';
+      /* Map row-filter value to category key */
+      const cat = filter === 'explore_featured' ? 'all' : filter;
+      setCategory(cat);
+      /* Scroll to top of content */
+      document.getElementById('explore')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  });
+
+  renderPageChrome('all');
+  </script>
+
+  <!-- Restaurant Modal Controller -->
+  <script>
+  /* ─────────────────────────────────────────────────────────────────
+     RESTAURANT MODAL
+  ───────────────────────────────────────────────────────────────── */
+  (function () {
+    const overlay = document.getElementById('rmodal-overlay') as HTMLElement | null;
+    if (!overlay) return;
+
+    function openModal(slug: string) {
+      const panel = document.getElementById('rmodal-' + slug) as HTMLElement | null;
+      if (!panel) return;
+
+      /* Hide any previously active panel */
+      overlay!.querySelectorAll<HTMLElement>('.rmodal-panel.is-active').forEach((p) => {
+        p.classList.remove('is-active');
+      });
+
+      panel.classList.add('is-active');
+      overlay!.classList.add('is-open');
+      document.body.style.overflow = 'hidden';
+
+      /* Scroll panel to top */
+      panel.scrollTop = 0;
+      overlay!.scrollTop = 0;
+    }
+
+    function closeModal() {
+      overlay!.classList.remove('is-open');
+      document.body.style.overflow = '';
+      setTimeout(() => {
+        overlay!.querySelectorAll<HTMLElement>('.rmodal-panel.is-active').forEach((p) => {
+          p.classList.remove('is-active');
+        });
+      }, 280);
+    }
+
+    /* Open on card click */
+    document.querySelectorAll<HTMLElement>('[data-modal]').forEach((card) => {
+      card.addEventListener('click', () => {
+        const slug = card.dataset.modal;
+        if (slug) openModal(slug);
+      });
+    });
+
+    /* Close on backdrop click (click outside panel) */
+    overlay.addEventListener('click', (e) => {
+      if ((e.target as HTMLElement) === overlay) closeModal();
+    });
+
+    /* Close buttons inside panels */
+    overlay.querySelectorAll<HTMLElement>('.rmodal-close').forEach((btn) => {
+      btn.addEventListener('click', closeModal);
+    });
+
+    /* Escape key */
+    document.addEventListener('keydown', (e) => {
+      if ((e as KeyboardEvent).key === 'Escape' && overlay.classList.contains('is-open')) {
+        closeModal();
+      }
+    });
+
+    /* ── Lightbox ─────────────────────────────────────────────── */
+    const lb         = document.getElementById('lightbox') as HTMLElement;
+    const lbImg      = document.getElementById('lightbox-img') as HTMLImageElement;
+    const lbCounter  = document.getElementById('lightbox-counter') as HTMLElement;
+    const lbClose    = lb.querySelector<HTMLElement>('.lightbox-close')!;
+    const lbPrev     = lb.querySelector<HTMLElement>('.lightbox-prev')!;
+    const lbNext     = lb.querySelector<HTMLElement>('.lightbox-next')!;
+
+    let lbItems: string[] = [];
+    let lbIndex = 0;
+
+    function lbShow(index: number) {
+      lbIndex = index;
+      lbImg.src = lbItems[lbIndex];
+      lbCounter.textContent = `${lbIndex + 1} / ${lbItems.length}`;
+      lbPrev.classList.toggle('is-hidden', lbIndex === 0);
+      lbNext.classList.toggle('is-hidden', lbIndex === lbItems.length - 1);
+    }
+
+    function lbOpen(group: string, idx: number) {
+      const items = document.querySelectorAll<HTMLElement>(`[data-lightbox-group="${group}"]`);
+      lbItems = Array.from(items).map(el => el.dataset.lightboxSrc!);
+      lb.classList.add('is-open');
+      document.body.style.overflow = 'hidden';
+      lbShow(idx);
+    }
+
+    function lbClose() {
+      lb.classList.remove('is-open');
+      document.body.style.overflow = '';
+      lbImg.src = '';
+    }
+
+    document.addEventListener('click', (e) => {
+      const el = (e.target as HTMLElement).closest<HTMLElement>('[data-lightbox-group]');
+      if (el) {
+        lbOpen(el.dataset.lightboxGroup!, Number(el.dataset.lightboxIdx ?? 0));
+        return;
+      }
+      if (e.target === lb) lbClose();
+    });
+
+    lbClose.addEventListener('click', lbClose);
+    lbPrev.addEventListener('click', () => lbShow(lbIndex - 1));
+    lbNext.addEventListener('click', () => lbShow(lbIndex + 1));
+
+    document.addEventListener('keydown', (e) => {
+      if (!lb.classList.contains('is-open')) return;
+      if ((e as KeyboardEvent).key === 'Escape') lbClose();
+      if ((e as KeyboardEvent).key === 'ArrowLeft'  && lbIndex > 0) lbShow(lbIndex - 1);
+      if ((e as KeyboardEvent).key === 'ArrowRight' && lbIndex < lbItems.length - 1) lbShow(lbIndex + 1);
+    });
+  })();
+  </script>
+
+</BaseLayout>

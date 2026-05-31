@@ -1,0 +1,110 @@
+---
+interface Props {
+  stats?: { num: string; label: string }[];
+  neighborhoods?: string[];
+}
+
+const {
+  stats = [
+    { num: '0',  label: 'Spots' },
+    { num: '0',  label: 'Cuisines' },
+    { num: '0',  label: 'Areas' },
+  ],
+  neighborhoods = [],
+} = Astro.props;
+
+const heroPages = [
+  {
+    id: 'all',
+    title: 'Khám phá',
+    subtitle: 'Tui hay ăn nhất, quán local ở Đà Lạt nè, đồ ăn tui nấu và mấy món đáng lưu lại.',
+    image: '/images/cenix-characters/cenix-kham-pha.png',
+  },
+  {
+    id: 'breakfast',
+    title: 'Ăn sáng',
+    subtitle: 'List quán ăn sáng, lọc nhanh theo location và mấy quán tui hay ghé.',
+    image: '/images/cenix-characters/cenix-an-sang.png',
+  },
+  {
+    id: 'dinner',
+    title: 'Ăn tối',
+    subtitle: 'Mấy quán ăn tối ngon, từ cơm nhà đến chỗ hẹn hò cuối tuần.',
+    image: '/images/cenix-characters/cenix-an-toi.png',
+  },
+  {
+    id: 'drinks',
+    title: 'Ăn nhậu',
+    subtitle: 'Mấy kèo nhậu, quán Đà Lạt và quán đại trà dễ rủ bạn bè.',
+    image: '/images/cenix-characters/cenix-beer.png',
+  },
+  {
+    id: 'snack',
+    title: 'Ăn vặt',
+    subtitle: 'Đồ ăn vặt, món vui miệng và các chỗ dễ ghé khi không biết ăn gì.',
+    image: '/images/cenix-characters/cenix-an-vat.png',
+  },
+  {
+    id: 'dalat',
+    title: 'Đà Lạt',
+    subtitle: 'Quán local Đà Lạt, chỗ ngồi chill và mấy địa điểm ăn uống đáng ghé nhất.',
+    image: '/images/cenix-characters/cenix-dalat.png',
+  },
+  {
+    id: 'cook',
+    title: 'Cenix can Cook',
+    subtitle: 'Đồ tui nấu và reels bếp núc gom riêng một chỗ.',
+    image: '/images/cenix-characters/cenix-cooking.png',
+  },
+  {
+    id: 'collect',
+    title: 'Sưu tầm',
+    subtitle: 'Bài người ta post hay, reels đáng lưu và mấy nguồn cảm hứng ăn uống.',
+    image: '/images/cenix-characters/cenix-suu-tam.png',
+  },
+];
+
+const defaultHero = heroPages[0];
+---
+
+<section class="hero" data-hero>
+  <div class="hero-inner">
+    <div class="hero-copy">
+      <span class="hero-eyebrow">
+        <span aria-hidden="true">📍</span>
+        <span data-hero-eyebrow>App tra cứu quán ngon của Cenix</span>
+      </span>
+
+      <h1 class="hero-title" data-hero-title>
+        {defaultHero.title}
+      </h1>
+
+      <p class="hero-subtitle" data-hero-subtitle>
+        {defaultHero.subtitle}
+      </p>
+
+      <div class="hero-location">
+        <span class="filter-label">Location</span>
+        <div class="location-select-wrap">
+          <span aria-hidden="true">⌖</span>
+          <select class="location-select" data-location-select aria-label="Lọc theo khu vực">
+            <option value="all">Tất cả khu vực</option>
+            {neighborhoods.map((n) => (<option value={n}>{n}</option>))}
+          </select>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="hero-visual" aria-hidden="true">
+    <img
+      src={defaultHero.image}
+      alt=""
+      width="1024"
+      height="1536"
+      loading="eager"
+      data-hero-image
+    />
+  </div>
+  <script type="application/json" data-hero-pages set:html={JSON.stringify(heroPages)} />
+</section>

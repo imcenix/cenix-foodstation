@@ -1,0 +1,88 @@
+---
+const links = [
+  { label: 'Khám phá',      category: 'all',       icon: '/images/icons/kham-pha.svg' },
+  { label: 'Ăn sáng',       category: 'breakfast',  icon: '/images/icons/an-sang.svg'  },
+  { label: 'Ăn tối',        category: 'dinner',     icon: '/images/icons/an-toi.svg'   },
+  { label: 'Ăn nhậu',       category: 'drinks',     icon: '/images/icons/an-nhau.svg'  },
+  { label: 'Ăn vặt',        category: 'snack',      icon: '/images/icons/an-vat.svg'   },
+  { label: 'Đà Lạt',        category: 'dalat',      icon: '/images/icons/da-lat.svg'   },
+  { label: 'Cenix can Cook', category: 'cook',       icon: '/images/icons/cook.svg'     },
+  { label: 'Sưu tầm',       category: 'collect',    icon: '/images/icons/suu-tap.svg'  },
+];
+---
+
+<aside class="nav">
+
+  <!-- ── Desktop: logo floats above the glass panel ─────────── -->
+  <a href="/" class="nav-logo" aria-label="Cenix Food Station">
+    <img src="/images/cenix%20food%20station.png" alt="Cenix Food Station" />
+  </a>
+
+  <!-- ── Mobile top bar: hamburger icon + centred logo ─────── -->
+  <div class="nav-topbar">
+    <button
+      class="nav-hamburger"
+      id="nav-hamburger"
+      aria-label="Mở menu điều hướng"
+      aria-expanded="false"
+    >
+      <span class="nav-hamburger__line"></span>
+      <span class="nav-hamburger__line"></span>
+      <span class="nav-hamburger__line"></span>
+    </button>
+
+    <a href="/" class="nav-logo nav-logo--mob" aria-label="Cenix Food Station">
+      <img src="/images/cenix%20food%20station.png" alt="Cenix Food Station" />
+    </a>
+  </div>
+
+  <!-- ── Nav panel: sidebar (desktop) / dropdown (mobile) ───── -->
+  <div class="nav-panel" id="nav-panel">
+    <nav class="nav-menu" aria-label="Điều hướng chính">
+      {links.map((link) => (
+        <button
+          type="button"
+          class:list={['nav-link', { active: link.category === 'all' }]}
+          title={link.label}
+          data-sidebar-category={link.category}
+        >
+          <span class="nav-link-icon" aria-hidden="true">
+            <img src={link.icon} alt="" width="20" height="20" />
+          </span>
+          {link.label}
+        </button>
+      ))}
+    </nav>
+  </div>
+
+</aside>
+
+<script>
+  const hamburger = document.getElementById('nav-hamburger') as HTMLButtonElement | null;
+  const panel     = document.getElementById('nav-panel')    as HTMLElement | null;
+
+  hamburger?.addEventListener('click', () => {
+    const open = panel?.classList.toggle('is-open') ?? false;
+    hamburger.setAttribute('aria-expanded', String(open));
+    hamburger.classList.toggle('is-active', open);
+  });
+
+  /* Close dropdown when a nav link is tapped */
+  document.querySelectorAll<HTMLButtonElement>('[data-sidebar-category]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      panel?.classList.remove('is-open');
+      hamburger?.setAttribute('aria-expanded', 'false');
+      hamburger?.classList.remove('is-active');
+    });
+  });
+
+  /* Close on outside tap */
+  document.addEventListener('click', (e) => {
+    const target = e.target as Node;
+    if (!panel?.contains(target) && !hamburger?.contains(target)) {
+      panel?.classList.remove('is-open');
+      hamburger?.setAttribute('aria-expanded', 'false');
+      hamburger?.classList.remove('is-active');
+    }
+  });
+</script>

@@ -1,0 +1,45 @@
+---
+import '../styles/global.css';
+import Nav from '../components/Nav.astro';
+import Footer from '../components/Footer.astro';
+
+interface Props {
+  title: string;
+  description?: string;
+  activeNav?: 'home' | 'all' | 'about';
+}
+
+const {
+  title,
+  description = "Cenix's Food Station — bộ sưu tập các quán ăn ngon đã đi qua.",
+  activeNav = 'home',
+} = Astro.props;
+---
+
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="/images/favicon.png" />
+    <link rel="apple-touch-icon" href="/images/favicon.png" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Baloo+2:wght@700;800&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body data-page={activeNav} id="top">
+    <Nav activeNav={activeNav} />
+    <main class="app-main">
+      <slot />
+      <Footer />
+    </main>
+  </body>
+</html>
