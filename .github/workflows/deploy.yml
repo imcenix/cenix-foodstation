@@ -1,0 +1,70 @@
+name: Deploy FoodStation
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'assets/**'
+      - 'public/**'
+      - 'scripts/**'
+      - 'src/**'
+      - 'astro.config.mjs'
+      - 'package.json'
+      - 'package-lock.json'
+      - 'tsconfig.json'
+  workflow_dispatch:
+
+concurrency:
+  group: foodstation-deploy
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    name: Build and deploy yum.imcenix.com
+    runs-on: ubuntu-latest
+    env:
+      PROJECT_SLUG: yum
+      SITE_DOMAIN: yum.imcenix.com
+      SFTP_HOST: ${{ secrets.SFTP_HOST }}
+      SFTP_PORT: ${{ secrets.SFTP_PORT || '22' }}
+      SFTP_USER: ${{ secrets.SFTP_USER }}
+      SFTP_PASSWORD: ${{ secrets.SFTP_PASSWORD }}
+      SFTP_REMOTE_PATH: ${{ secrets.SFTP_REMOTE_PATH }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+      - name: Install lftp
+        run: sudo apt-get update && sudo apt-get install -y lftp
+
+      - name: Deploy to /yum
+        run: |
+          set -euo pipefail
+          ROOT_DIR="${SFTP_REMOTE_PATH%/}"
+          YUM_DIR="$ROOT_DIR/$PROJECT_SLUG"
+          lftp -u "$SFTP_USER","$SFTP_PASSWORD" -p "$SFTP_PORT" "sftp://$SFTP_HOST" <<LFTP
+          set cmd:fail-exit yes
+          set sftp:auto-confirm yes
+          set net:max-retries 2
+          set net:timeout 20
+          mkdir -p "$YUM_DIR"
+          mirror --reverse --verbose --delete --parallel=4 \
+            --exclude-glob .DS_Store \
+            --exclude-glob *.log \
+            dist/ "$YUM_DIR"
+          chmod -R 755 "$YUM_DIR"
+          bye
+          LFTP

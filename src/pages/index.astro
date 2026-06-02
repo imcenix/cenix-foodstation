@@ -46,6 +46,8 @@ const contentRows = [
   { id: 'row-3', title: 'Đồ ăn tui nấu',         filter: 'cook'            },
 ];
 
+const transparentPixel = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==';
+
 /* ── Modal data prep ─────────────────────────────────────────── */
 const categoryMeta: Record<string, { label: string; icon: string; bg: string; color: string }> = {
   breakfast: { label: 'Ăn sáng',   icon: '☀',  bg: 'rgba(255,217,61,.18)',  color: '#b58900' },
@@ -101,20 +103,20 @@ const restaurantsWithContent = await Promise.all(
     radial-gradient(ellipse 42% 42% at 50% 50%,  rgba(190,225,255,.22) 0%, transparent 62%),
     linear-gradient(148deg, #fff6f6 0%, #f6fff9 30%, #f6f5ff 62%, #fffbf2 100%);
 
-  animation: ov-fadein .55s ease forwards;
+  animation: ov-fadein .28s ease forwards;
 }
 @keyframes ov-fadein { from{opacity:0} to{opacity:1} }
 
 /* ── Animated background blobs ─────────────────────────────── */
 .ov-blob {
   position: absolute; border-radius: 50%;
-  filter: blur(90px); pointer-events: none; will-change: transform;
+  filter: blur(42px); pointer-events: none;
 }
-.ov-blob--1 { width:640px;height:640px; background:radial-gradient(circle,rgba(255,100,130,.52),transparent 70%); top:-200px;left:-160px; animation:ob1 23s ease-in-out infinite; }
-.ov-blob--2 { width:700px;height:700px; background:radial-gradient(circle,rgba( 70,210,150,.44),transparent 70%); top:-250px;right:-210px; animation:ob2 29s ease-in-out infinite; }
-.ov-blob--3 { width:560px;height:560px; background:radial-gradient(circle,rgba(165,130,255,.44),transparent 70%); bottom:-160px;left:2%; animation:ob3 21s ease-in-out infinite; }
-.ov-blob--4 { width:580px;height:580px; background:radial-gradient(circle,rgba(255,165, 70,.44),transparent 70%); bottom:-180px;right:-100px; animation:ob4 26s ease-in-out infinite; }
-.ov-blob--5 { width:420px;height:420px; background:radial-gradient(circle,rgba(120,185,255,.36),transparent 70%); top:36%;left:30%; animation:ob5 18s ease-in-out infinite; }
+.ov-blob--1 { width:520px;height:520px; background:radial-gradient(circle,rgba(255,100,130,.44),transparent 70%); top:-170px;left:-140px; }
+.ov-blob--2 { width:560px;height:560px; background:radial-gradient(circle,rgba( 70,210,150,.36),transparent 70%); top:-210px;right:-190px; }
+.ov-blob--3 { width:460px;height:460px; background:radial-gradient(circle,rgba(165,130,255,.34),transparent 70%); bottom:-140px;left:2%; }
+.ov-blob--4 { width:460px;height:460px; background:radial-gradient(circle,rgba(255,165, 70,.34),transparent 70%); bottom:-150px;right:-90px; }
+.ov-blob--5 { width:320px;height:320px; background:radial-gradient(circle,rgba(120,185,255,.28),transparent 70%); top:36%;left:30%; }
 
 @keyframes ob1{0%,100%{transform:translate(0,0)scale(1)}33%{transform:translate(58px,38px)scale(1.11)}66%{transform:translate(-28px,75px)scale(.92)}}
 @keyframes ob2{0%,100%{transform:translate(0,0)scale(1)}33%{transform:translate(-48px,58px)scale(1.08)}66%{transform:translate(28px,-38px)scale(1.13)}}
@@ -136,7 +138,6 @@ const restaurantsWithContent = await Promise.all(
 .ov-food {
   position: absolute;
   pointer-events: none;
-  will-change: transform;
   display: flex; align-items: center; justify-content: center;
   animation-fill-mode: backwards;
 }
@@ -147,7 +148,7 @@ const restaurantsWithContent = await Promise.all(
   width: clamp(130px, 15vw, 220px);
   height: clamp(130px, 15vw, 220px);
   background: none; border: none; border-radius: 0;
-  filter: blur(.8px) saturate(.92) opacity(.86);
+  filter: saturate(.92) opacity(.82);
 }
 .ov-food--bg img {
   width: 100%; height: 100%;
@@ -179,16 +180,16 @@ const restaurantsWithContent = await Promise.all(
 /* ── Food item positions ────────────────────────────────────── */
 
 /* — Behind glass — */
-.ov-food--bg1 { top: 7%;   left: 1.2%; animation: fpop .55s ease 1.9s backwards, ff1 5.4s ease-in-out 2.6s infinite; }
-.ov-food--bg2 { bottom:14%;left: 4%;   animation: fpop .55s ease 2.3s backwards, ff2 4.8s ease-in-out 3.1s infinite; }
-.ov-food--bg3 { top: 45%; right: 1%; animation: fpop .55s ease 2.7s backwards, ff3 6.0s ease-in-out 3.6s infinite; }
-.ov-food--bg4 { top: 1%;  right: 1%; animation: fpop .55s ease 3.1s backwards, ff4 5.2s ease-in-out 4.0s infinite; }
+.ov-food--bg1 { top: 7%;   left: 1.2%; animation: fpop .38s ease .45s backwards; }
+.ov-food--bg2 { bottom:14%;left: 4%;   animation: fpop .38s ease .55s backwards; }
+.ov-food--bg3 { top: 45%; right: 1%; animation: fpop .38s ease .65s backwards; }
+.ov-food--bg4 { top: 1%;  right: 1%; animation: fpop .38s ease .75s backwards; }
 
 /* — In front of glass — */
-.ov-food--fg1 { bottom: 2%; right: 1%; animation: fpop .6s cubic-bezier(.34,1.56,.64,1) 1.7s backwards, ff5 4.9s ease-in-out 2.4s infinite; }
-.ov-food--fg2 { bottom:22%;right:calc(39% + 120px); width:clamp(150px, 16vw, 250px); height:clamp(150px, 16vw, 250px);  animation: fpop .6s cubic-bezier(.34,1.56,.64,1) 2.1s backwards, ff6 5.6s ease-in-out 2.8s infinite; }
-.ov-food--fg3 { bottom:calc(24% - 15px);right:calc(2.5% + 110px); animation: fpop .6s cubic-bezier(.34,1.56,.64,1) 2.5s backwards, ff7 4.3s ease-in-out 3.2s infinite; }
-.ov-food--fg4 { bottom:7%; left:calc(10% + 100px); width:clamp(160px, 17vw, 260px); height:clamp(160px, 17vw, 260px); animation: fpop .6s cubic-bezier(.34,1.56,.64,1) 2.9s backwards, ff8 5.8s ease-in-out 3.6s infinite; }
+.ov-food--fg1 { bottom: 2%; right: 1%; animation: fpop .42s cubic-bezier(.34,1.56,.64,1) .62s backwards; }
+.ov-food--fg2 { bottom:22%;right:calc(39% + 120px); width:clamp(150px, 16vw, 250px); height:clamp(150px, 16vw, 250px);  animation: fpop .42s cubic-bezier(.34,1.56,.64,1) .72s backwards; }
+.ov-food--fg3 { bottom:calc(24% - 15px);right:calc(2.5% + 110px); animation: fpop .42s cubic-bezier(.34,1.56,.64,1) .82s backwards; }
+.ov-food--fg4 { bottom:7%; left:calc(10% + 100px); width:clamp(160px, 17vw, 260px); height:clamp(160px, 17vw, 260px); animation: fpop .42s cubic-bezier(.34,1.56,.64,1) .92s backwards; }
 
 @keyframes fpop{from{opacity:0;transform:scale(0)rotate(-25deg)}to{opacity:1;transform:scale(1)rotate(0)}}
 
@@ -216,8 +217,8 @@ const restaurantsWithContent = await Promise.all(
     rgba(255,255,255,.10) 55%,
     rgba(255,255,255,.18) 100%
   );
-  backdrop-filter: blur(22px) saturate(190%) brightness(1.04);
-  -webkit-backdrop-filter: blur(22px) saturate(190%) brightness(1.04);
+  backdrop-filter: blur(9px) saturate(145%) brightness(1.03);
+  -webkit-backdrop-filter: blur(9px) saturate(145%) brightness(1.03);
   border: 1px solid rgba(255,255,255,.58);
   border-radius: 40px;
   box-shadow:
@@ -226,7 +227,7 @@ const restaurantsWithContent = await Promise.all(
     inset 0 -1px 0 rgba(0,0,0,.04),
     inset 1px 0 0 rgba(255,255,255,.60);
 
-  animation: glass-appear .85s cubic-bezier(.22,1,.36,1) .25s backwards;
+  animation: glass-appear .45s cubic-bezier(.22,1,.36,1) .12s backwards;
 }
 @keyframes glass-appear{
   from{opacity:0;transform:translate(-50%,-50%)scale(.96);filter:blur(4px)}
@@ -248,7 +249,7 @@ const restaurantsWithContent = await Promise.all(
   top: 38px; left: 0;
   width: clamp(220px, 20vw, 330px);
   filter: drop-shadow(0 8px 20px rgba(23,33,61,.14));
-  animation: logo-slide .9s cubic-bezier(.34,1.56,.64,1) .55s backwards;
+  animation: logo-slide .45s cubic-bezier(.34,1.56,.64,1) .22s backwards;
 }
 .ov-glass__logo img { width:100%;height:auto;object-fit:contain; }
 @keyframes logo-slide{from{opacity:0;transform:translateY(-18px)scale(.9)}to{opacity:1;transform:translateY(0)scale(1)}}
@@ -273,12 +274,12 @@ const restaurantsWithContent = await Promise.all(
 }
 .ov-glass__tagline--1 {
   color: #17213d;
-  animation: tag-in .75s cubic-bezier(.34,1.56,.64,1) .75s backwards;
+  animation: tag-in .42s cubic-bezier(.34,1.56,.64,1) .32s backwards;
 }
 .ov-glass__tagline--2 {
   color: #FF4D8D;
   margin-top: .05em;
-  animation: tag-in .75s cubic-bezier(.34,1.56,.64,1) .95s backwards;
+  animation: tag-in .42s cubic-bezier(.34,1.56,.64,1) .42s backwards;
 }
 @keyframes tag-in{from{opacity:0;transform:translateX(-28px)}to{opacity:1;transform:translateX(0)}}
 
@@ -296,7 +297,7 @@ const restaurantsWithContent = await Promise.all(
   font-size: clamp(.9rem, 1vw, 1rem);
   font-weight: 900;
   box-shadow: 0 18px 42px rgba(255,77,141,.28), inset 0 1px 0 rgba(255,255,255,.52);
-  animation: tag-in .75s cubic-bezier(.34,1.56,.64,1) 1.12s backwards;
+  animation: tag-in .42s cubic-bezier(.34,1.56,.64,1) .52s backwards;
 }
 
 .ov-glass__cta:hover {
@@ -315,8 +316,7 @@ const restaurantsWithContent = await Promise.all(
   width: clamp(260px, 46vh, 720px);
   pointer-events: none;
   /* translateY(-50%) đặt trong keyframe để không conflict với animation */
-  animation: man-rise .9s cubic-bezier(.22,1,.36,1) .4s both;
-  will-change: transform;
+  animation: man-rise .5s cubic-bezier(.22,1,.36,1) .18s both;
 }
 .ov-man img {
   width: 100%; height: auto; display: block;
@@ -329,7 +329,7 @@ const restaurantsWithContent = await Promise.all(
 
 /* Inner: idle float */
 .ov-man__inner {
-  animation: man-float 5.5s ease-in-out 1.4s infinite;
+  animation: none;
 }
 @keyframes man-float{
   0%,100%{transform:translateY(0)   rotate(0deg)}
@@ -412,28 +412,28 @@ const restaurantsWithContent = await Promise.all(
   width: clamp(220px, 21vw, 340px);
   height: auto;
   pointer-events: none;
-  filter: drop-shadow(0 18px 42px rgba(23,33,61,.16));
+  filter: drop-shadow(0 12px 24px rgba(23,33,61,.12));
 }
 .ov-chat-img--1 {
   top: calc(3% - 20px);
   right: calc(35% - 30px);
-  animation: cpop .62s cubic-bezier(.34,1.56,.64,1) .6s backwards, cf4 5.0s ease-in-out 1.3s infinite;
+  animation: cpop .42s cubic-bezier(.34,1.56,.64,1) .42s backwards;
 }
 .ov-chat-img--2 {
   top: 34%;
   right: calc(5% - 10px);
   width: clamp(205px, 19.5vw, 315px);
-  animation: cpop .62s cubic-bezier(.34,1.56,.64,1) .9s backwards, cf3 4.1s ease-in-out 1.6s infinite;
+  animation: cpop .42s cubic-bezier(.34,1.56,.64,1) .52s backwards;
 }
 .ov-chat-img--3 {
   top: calc(32% + 30px);
   right: 34%;
-  animation: cpop .62s cubic-bezier(.34,1.56,.64,1) 1.2s backwards, cf1 4.6s ease-in-out 1.9s infinite;
+  animation: cpop .42s cubic-bezier(.34,1.56,.64,1) .62s backwards;
 }
 .ov-chat-img--4 {
   top: calc(18% - 50px);
   right: 5%;
-  animation: cpop .62s cubic-bezier(.34,1.56,.64,1) 1.5s backwards, cf2 5.3s ease-in-out 2.2s infinite;
+  animation: cpop .42s cubic-bezier(.34,1.56,.64,1) .72s backwards;
 }
 
 @keyframes cpop{from{opacity:0;transform:scale(.70)translateY(16px)}to{opacity:1;transform:scale(1)translateY(0)}}
@@ -481,10 +481,7 @@ const restaurantsWithContent = await Promise.all(
 }
 
 /* ── Mouse parallax (set by JS) ─────────────────────────────── */
-[data-px] {
-  transition: translate .12s linear;
-  will-change: translate;
-}
+[data-px] { transition: translate .12s linear; }
 
 /* ── Dismiss animations ─────────────────────────────────────── */
 .is-scattering {
@@ -898,22 +895,26 @@ const restaurantsWithContent = await Promise.all(
     <div class="ov-grid"            aria-hidden="true"></div>
 
     <!-- ── Z2: Food items BEHIND glass (blurred through glass) ── -->
-    <div class="ov-food ov-food--bg ov-food--bg1" aria-hidden="true" data-px="0.07"><img src="/images/foods-intro/03.png" alt="" /></div>
-    <div class="ov-food ov-food--bg ov-food--bg2" aria-hidden="true" data-px="0.06"><img src="/images/foods-intro/06.png" alt="" /></div>
-    <div class="ov-food ov-food--bg ov-food--bg3" aria-hidden="true" data-px="0.05"><img src="/images/foods-intro/07.png" alt="" /></div>
-    <div class="ov-food ov-food--bg ov-food--bg4" aria-hidden="true" data-px="0.08"><img src="/images/foods-intro/04.png" alt="" /></div>
+    <div class="ov-food ov-food--bg ov-food--bg1" aria-hidden="true" data-px="0.07"><picture><source media="(min-width: 761px)" srcset="/images/intro-optimized/foods-intro/03.png" /><img src={transparentPixel} alt="" width="300" height="200" loading="lazy" decoding="async" /></picture></div>
+    <div class="ov-food ov-food--bg ov-food--bg2" aria-hidden="true" data-px="0.06"><picture><source media="(min-width: 761px)" srcset="/images/intro-optimized/foods-intro/06.png" /><img src={transparentPixel} alt="" width="300" height="300" loading="lazy" decoding="async" /></picture></div>
+    <div class="ov-food ov-food--bg ov-food--bg3" aria-hidden="true" data-px="0.05"><picture><source media="(min-width: 761px)" srcset="/images/intro-optimized/foods-intro/07.png" /><img src={transparentPixel} alt="" width="300" height="300" loading="lazy" decoding="async" /></picture></div>
+    <div class="ov-food ov-food--bg ov-food--bg4" aria-hidden="true" data-px="0.08"><picture><source media="(min-width: 761px)" srcset="/images/intro-optimized/foods-intro/04.png" /><img src={transparentPixel} alt="" width="300" height="300" loading="lazy" decoding="async" /></picture></div>
 
     <!-- ── Z4: Frosted glass panel ── -->
     <div class="ov-glass">
 
       <!-- Logo -->
       <div class="ov-glass__logo" data-px="0.018">
-        <img
-          src="/images/cenix%20food%20station.png"
-          alt="Cenix Food Station"
-          width="210" height="90"
-          fetchpriority="high"
-        />
+        <picture>
+          <source media="(min-width: 761px)" srcset="/images/intro-optimized/cenix-food-logo.png" />
+          <img
+            src={transparentPixel}
+            alt="Cenix Food Station"
+            width="420" height="280"
+            decoding="async"
+            fetchpriority="high"
+          />
+        </picture>
       </div>
 
       <!-- Display tagline -->
@@ -931,25 +932,29 @@ const restaurantsWithContent = await Promise.all(
     <!-- ── Z6: Man image (real PNG, right side) ── -->
     <div class="ov-man" data-px="0.020">
       <div class="ov-man__inner">
-        <img
-          src="/images/cenix%20food%20-%2001.png"
-          alt="Anh Cenix"
-          width="540" height="810"
-          fetchpriority="high"
-        />
+        <picture>
+          <source media="(min-width: 761px)" srcset="/images/intro-optimized/cenix-food-man.png" />
+          <img
+            src={transparentPixel}
+            alt="Anh Cenix"
+            width="480" height="720"
+            decoding="async"
+            fetchpriority="high"
+          />
+        </picture>
       </div>
     </div>
 
     <!-- ── Z7: Chat bubble PNGs (floating around man) ── -->
-    <img class="ov-chat-img ov-chat-img--1" src="/images/bubble-chat/1.png" alt="" aria-hidden="true" data-px="0.055" />
-    <img class="ov-chat-img ov-chat-img--2" src="/images/bubble-chat/2.png" alt="" aria-hidden="true" data-px="0.045" />
-    <img class="ov-chat-img ov-chat-img--3" src="/images/bubble-chat/3.png" alt="" aria-hidden="true" data-px="0.05" />
-    <img class="ov-chat-img ov-chat-img--4" src="/images/bubble-chat/4.png" alt="" aria-hidden="true" data-px="0.06" />
+    <picture><source media="(min-width: 761px)" srcset="/images/intro-optimized/bubble-chat/1.png" /><img class="ov-chat-img ov-chat-img--1" src={transparentPixel} alt="" width="360" height="240" loading="lazy" decoding="async" aria-hidden="true" data-px="0.055" /></picture>
+    <picture><source media="(min-width: 761px)" srcset="/images/intro-optimized/bubble-chat/2.png" /><img class="ov-chat-img ov-chat-img--2" src={transparentPixel} alt="" width="360" height="240" loading="lazy" decoding="async" aria-hidden="true" data-px="0.045" /></picture>
+    <picture><source media="(min-width: 761px)" srcset="/images/intro-optimized/bubble-chat/3.png" /><img class="ov-chat-img ov-chat-img--3" src={transparentPixel} alt="" width="360" height="240" loading="lazy" decoding="async" aria-hidden="true" data-px="0.05" /></picture>
+    <picture><source media="(min-width: 761px)" srcset="/images/intro-optimized/bubble-chat/4.png" /><img class="ov-chat-img ov-chat-img--4" src={transparentPixel} alt="" width="360" height="240" loading="lazy" decoding="async" aria-hidden="true" data-px="0.06" /></picture>
 
     <!-- ── Z8: Food items IN FRONT of glass (sharp, floating) ── -->
-    <div class="ov-food ov-food--fg ov-food--fg1" aria-hidden="true" data-px="0.07"><img src="/images/foods-intro/02.png" alt="" /></div>
-    <div class="ov-food ov-food--fg ov-food--fg2" aria-hidden="true" data-px="0.06"><img src="/images/foods-intro/01.png" alt="" /></div>
-    <div class="ov-food ov-food--fg ov-food--fg4" aria-hidden="true" data-px="0.05"><img src="/images/foods-intro/08.png" alt="" /></div>
+    <div class="ov-food ov-food--fg ov-food--fg1" aria-hidden="true" data-px="0.07"><picture><source media="(min-width: 761px)" srcset="/images/intro-optimized/foods-intro/02.png" /><img src={transparentPixel} alt="" width="300" height="300" loading="lazy" decoding="async" /></picture></div>
+    <div class="ov-food ov-food--fg ov-food--fg2" aria-hidden="true" data-px="0.06"><picture><source media="(min-width: 761px)" srcset="/images/intro-optimized/foods-intro/01.png" /><img src={transparentPixel} alt="" width="300" height="200" loading="lazy" decoding="async" /></picture></div>
+    <div class="ov-food ov-food--fg ov-food--fg4" aria-hidden="true" data-px="0.05"><picture><source media="(min-width: 761px)" srcset="/images/intro-optimized/foods-intro/08.png" /><img src={transparentPixel} alt="" width="300" height="200" loading="lazy" decoding="async" /></picture></div>
 
     <!-- ── Z10: Scroll cue ── -->
     <button
@@ -1187,24 +1192,27 @@ const restaurantsWithContent = await Promise.all(
        keyframe animations on `transform`.
     ──────────────────────────────────────────────────────────── */
     const pxEls: NodeListOf<HTMLElement> = ov.querySelectorAll('[data-px]');
-    let mx = 0, my = 0, cx = 0, cy = 0;
-
-    window.addEventListener('mousemove', (e) => {
-      mx = (e as MouseEvent).clientX - window.innerWidth  / 2;
-      my = (e as MouseEvent).clientY - window.innerHeight / 2;
-    }, { passive: true });
-
+    const canParallax =
+      window.matchMedia('(pointer: fine)').matches &&
+      !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    let dismissed = false;
     let rafPx = 0;
-    function tickPx() {
-      cx += (mx - cx) * 0.07;
-      cy += (my - cy) * 0.07;
-      pxEls.forEach((el) => {
-        const d = parseFloat(el.dataset.px || '0');
-        el.style.translate = `${cx * d}px ${cy * d}px`;
-      });
-      rafPx = requestAnimationFrame(tickPx);
+
+    if (canParallax) {
+      window.addEventListener('mousemove', (e) => {
+        if (dismissed || rafPx) return;
+        const mx = (e as MouseEvent).clientX - window.innerWidth  / 2;
+        const my = (e as MouseEvent).clientY - window.innerHeight / 2;
+
+        rafPx = requestAnimationFrame(() => {
+          pxEls.forEach((el) => {
+            const d = parseFloat(el.dataset.px || '0');
+            el.style.translate = `${mx * d}px ${my * d}px`;
+          });
+          rafPx = 0;
+        });
+      }, { passive: true });
     }
-    rafPx = requestAnimationFrame(tickPx);
 
     /* ── Scroll-progress tilt (pre-dismiss feedback) ─────────────
        As wheel delta accumulates, the glass panel tilts in 3D —
@@ -1214,30 +1222,29 @@ const restaurantsWithContent = await Promise.all(
     const manEl  = ov.querySelector<HTMLElement>('.ov-man');
     let scrollAcc = 0;
     const DISMISS_AT = 110;
+    const AUTO_DISMISS_MS = 2400;
 
     /* ── Dismiss sequence ────────────────────────────────────────
        Phase 1 (~440ms): floating elements scatter outward.
        Phase 2 (460ms+): overlay slides off-screen upward.
     ──────────────────────────────────────────────────────────── */
-    let dismissed = false;
-
     function dismiss() {
       if (dismissed) return;
       dismissed = true;
 
-      cancelAnimationFrame(rafPx);
+      if (rafPx) cancelAnimationFrame(rafPx);
       document.body.style.overflow = '';
 
       /* Scatter all floating elements */
       const floaters = Array.from(
-        ov.querySelectorAll<HTMLElement>('.ov-chat, .ov-food')
+        ov.querySelectorAll<HTMLElement>('.ov-chat-img, .ov-food')
       );
 
       const chatDirs: Record<string, [number, number]> = {
-        'ov-chat--1': [-200, -200],
-        'ov-chat--2': [ 240, -180],
-        'ov-chat--3': [ 280,  -80],
-        'ov-chat--4': [ 160,  180],
+        'ov-chat-img--1': [-200, -200],
+        'ov-chat-img--2': [ 240, -180],
+        'ov-chat-img--3': [ 280,  -80],
+        'ov-chat-img--4': [ 160,  180],
       };
 
       floaters.forEach((el, i) => {
@@ -1328,6 +1335,7 @@ const restaurantsWithContent = await Promise.all(
     /* CTA button */
     if (btn) btn.addEventListener('click', dismiss);
     if (xucBtn) xucBtn.addEventListener('click', dismiss);
+    window.setTimeout(dismiss, AUTO_DISMISS_MS);
 
   })();
 
@@ -1563,7 +1571,7 @@ const restaurantsWithContent = await Promise.all(
       lbShow(idx);
     }
 
-    function lbClose() {
+    function lbCloseBox() {
       lb.classList.remove('is-open');
       document.body.style.overflow = '';
       lbImg.src = '';
@@ -1575,16 +1583,16 @@ const restaurantsWithContent = await Promise.all(
         lbOpen(el.dataset.lightboxGroup!, Number(el.dataset.lightboxIdx ?? 0));
         return;
       }
-      if (e.target === lb) lbClose();
+      if (e.target === lb) lbCloseBox();
     });
 
-    lbClose.addEventListener('click', lbClose);
+    lbClose.addEventListener('click', lbCloseBox);
     lbPrev.addEventListener('click', () => lbShow(lbIndex - 1));
     lbNext.addEventListener('click', () => lbShow(lbIndex + 1));
 
     document.addEventListener('keydown', (e) => {
       if (!lb.classList.contains('is-open')) return;
-      if ((e as KeyboardEvent).key === 'Escape') lbClose();
+      if ((e as KeyboardEvent).key === 'Escape') lbCloseBox();
       if ((e as KeyboardEvent).key === 'ArrowLeft'  && lbIndex > 0) lbShow(lbIndex - 1);
       if ((e as KeyboardEvent).key === 'ArrowRight' && lbIndex < lbItems.length - 1) lbShow(lbIndex + 1);
     });

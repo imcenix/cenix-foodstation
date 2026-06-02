@@ -9,7 +9,7 @@ interface Props {
 
 const { restaurant, folder, mealTags = 'all' } = Astro.props;
 const { data } = restaurant;
-const coverUrl = `/restaurants/${folder}/cover.jpg`;
+const coverUrl = `/restaurants/${folder}/cover-card.jpg`;
 
 const type        = data.type ?? 'restaurant';
 const isRestaurant = type === 'restaurant';
@@ -33,7 +33,7 @@ const stars = starRating > 0
   data-modal={`restaurant-${data.slug}`}
 >
   <div class="r-card-media">
-    <img src={coverUrl} alt={data.name} loading="lazy" />
+    <img src={coverUrl} alt={data.name} width="540" height="720" loading="lazy" decoding="async" />
 
     {/* Stars — restaurant only */}
     {isRestaurant && starRating > 0 && (

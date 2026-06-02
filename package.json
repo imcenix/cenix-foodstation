@@ -8,6 +8,7 @@
     "dev": "astro dev",
     "prebuild": "node ./scripts/link-assets.mjs",
     "build": "astro build",
+    "deploy": "./Publish.command",
     "preview": "astro preview",
     "astro": "astro"
   },

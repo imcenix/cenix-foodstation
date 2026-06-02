@@ -25,15 +25,31 @@ const {
     <meta name="description" content={description} />
 
     <!-- Favicon -->
-    <link rel="icon" type="image/png" href="/images/favicon.png" />
-    <link rel="apple-touch-icon" href="/images/favicon.png" />
+    <link rel="icon" type="image/png" href="/images/favicon-180.png" />
+    <link rel="apple-touch-icon" href="/images/favicon-180.png" />
+    <link
+      rel="preload"
+      as="image"
+      href="/images/characters-optimized/cenix-kham-pha.png"
+      imagesrcset="/images/characters-optimized/cenix-kham-pha-sm.png 280w, /images/characters-optimized/cenix-kham-pha.png 720w"
+      imagesizes="(max-width: 760px) 38vw, 34vw"
+      fetchpriority="high"
+    />
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
       href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Baloo+2:wght@700;800&display=swap"
       rel="stylesheet"
+      media="print"
+      onload="this.media='all'"
     />
+    <noscript>
+      <link
+        href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Baloo+2:wght@700;800&display=swap"
+        rel="stylesheet"
+      />
+    </noscript>
   </head>
   <body data-page={activeNav} id="top">
     <Nav activeNav={activeNav} />
