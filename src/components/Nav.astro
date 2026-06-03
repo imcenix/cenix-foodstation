@@ -1,4 +1,16 @@
 ---
+import { statSync } from 'node:fs';
+import { join } from 'node:path';
+
+// Cache-bust theo mtime của file logo → đổi logo là URL đổi, không dính cache cũ.
+let logoVersion = '1';
+try {
+  logoVersion = String(Math.round(
+    statSync(join(process.cwd(), 'assets/images/intro-optimized/cenix-food-logo-nav.png')).mtimeMs
+  ));
+} catch { /* ignore */ }
+const navLogoSrc = `/images/intro-optimized/cenix-food-logo-nav.png?v=${logoVersion}`;
+
 const links = [
   { label: 'Khám phá',      category: 'all',       icon: '/images/icons/kham-pha.svg' },
   { label: 'Ăn sáng',       category: 'breakfast',  icon: '/images/icons/an-sang.svg'  },
@@ -15,7 +27,7 @@ const links = [
 
   <!-- ── Desktop: logo floats above the glass panel ─────────── -->
   <a href="/" class="nav-logo" aria-label="Cenix Food Station">
-    <img src="/images/intro-optimized/cenix-food-logo-nav.png" alt="Cenix Food Station" width="220" height="146" decoding="async" />
+    <img src={navLogoSrc} alt="Cenix Food Station" width="220" height="146" decoding="async" />
   </a>
 
   <!-- ── Mobile top bar: hamburger icon + centred logo ─────── -->
@@ -32,7 +44,7 @@ const links = [
     </button>
 
     <a href="/" class="nav-logo nav-logo--mob" aria-label="Cenix Food Station">
-      <img src="/images/intro-optimized/cenix-food-logo-nav.png" alt="Cenix Food Station" width="220" height="146" decoding="async" />
+      <img src={navLogoSrc} alt="Cenix Food Station" width="220" height="146" decoding="async" />
     </a>
   </div>
 

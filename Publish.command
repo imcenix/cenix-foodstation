@@ -27,6 +27,23 @@ if ! command -v lftp >/dev/null 2>&1; then
   exit 1
 fi
 
+# ── Đồng bộ với GitHub trước khi build ────────────────────────────────
+# CMS lưu bài thẳng lên GitHub, KHÔNG xuống máy. Nếu build từ source cũ rồi
+# deploy --delete sẽ XÓA mất bài tạo bằng CMS. Vì vậy luôn pull về trước.
+if command -v git >/dev/null 2>&1 && [ -d .git ]; then
+  rm -f .git/*.lock .git/refs/heads/*.lock 2>/dev/null || true
+  if [ -n "$(git status --porcelain)" ]; then
+    echo "📝 Lưu thay đổi local trước khi đồng bộ..."
+    git add -A
+    git -c user.email="cenix@imcenix.com" -c user.name="Cenix" commit -m "publish $(date '+%Y-%m-%d %H:%M:%S')" >/dev/null 2>&1 || true
+  fi
+  echo "⬇️  Kéo nội dung mới nhất từ GitHub (gồm bài tạo bằng CMS)..."
+  if ! git pull --no-edit; then
+    echo "❌ git pull lỗi (có thể xung đột). Dừng để tránh xóa nhầm bài. Xử lý git xong rồi chạy lại."
+    read -p "Press Enter to close..."; exit 1
+  fi
+fi
+
 echo "Building Cenix FoodStation..."
 npm run build
 

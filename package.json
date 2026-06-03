@@ -6,14 +6,15 @@
   "scripts": {
     "predev": "node ./scripts/link-assets.mjs",
     "dev": "astro dev",
-    "prebuild": "node ./scripts/link-assets.mjs",
+    "prebuild": "node ./scripts/link-assets.mjs && node ./scripts/make-cover-cards.mjs",
     "build": "astro build",
     "deploy": "./Publish.command",
     "preview": "astro preview",
     "astro": "astro"
   },
   "dependencies": {
-    "astro": "^5.1.0"
+    "astro": "^5.1.0",
+    "sharp": "^0.33.0"
   },
   "engines": {
     "node": ">=18.17.0"

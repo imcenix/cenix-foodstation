@@ -48,6 +48,17 @@ const contentRows = [
 
 const transparentPixel = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==';
 
+// Cache-bust logo intro theo mtime
+import { statSync } from 'node:fs';
+import { join as pathJoin } from 'node:path';
+let introLogoVersion = '1';
+try {
+  introLogoVersion = String(Math.round(
+    statSync(pathJoin(process.cwd(), 'assets/images/intro-optimized/cenix-food-logo.png')).mtimeMs
+  ));
+} catch { /* ignore */ }
+const introLogoSrc = `/images/intro-optimized/cenix-food-logo.png?v=${introLogoVersion}`;
+
 /* ── Modal data prep ─────────────────────────────────────────── */
 const categoryMeta: Record<string, { label: string; icon: string; bg: string; color: string }> = {
   breakfast: { label: 'Ăn sáng',   icon: '☀',  bg: 'rgba(255,217,61,.18)',  color: '#b58900' },
@@ -906,7 +917,7 @@ const restaurantsWithContent = await Promise.all(
       <!-- Logo -->
       <div class="ov-glass__logo" data-px="0.018">
         <picture>
-          <source media="(min-width: 761px)" srcset="/images/intro-optimized/cenix-food-logo.png" />
+          <source media="(min-width: 761px)" srcset={introLogoSrc} />
           <img
             src={transparentPixel}
             alt="Cenix Food Station"
@@ -1371,7 +1382,7 @@ const restaurantsWithContent = await Promise.all(
     dalat: {
       kicker: 'Đà Lạt',
       title: 'Quán local Đà Lạt',
-      lines: ['Phải thử khi lên', 'Cà phê chill', 'Ăn sáng Đà Lạt'],
+      lines: ['Quán tui hay ăn', 'Các quán local Đà Lạt'],
     },
     cook: {
       kicker: 'Cenix can Cook',
