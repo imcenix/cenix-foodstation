@@ -16,7 +16,7 @@ jobs:
     env:
       PROJECT_SLUG: yum
       SITE_DOMAIN: yum.imcenix.com
-      SFTP_HOST: ${{ secrets.SFTP_HOST }}
+      SFTP_HOST: ${{ secrets.SFTP_HOST || '45.32.110.164' }}
       SFTP_PORT: ${{ secrets.SFTP_PORT || '22' }}
       SFTP_USER: ${{ secrets.SFTP_USER }}
       SFTP_PASSWORD: ${{ secrets.SFTP_PASSWORD }}
@@ -41,12 +41,20 @@ jobs:
       - name: Install lftp
         run: sudo apt-get update && sudo apt-get install -y lftp
 
-      - name: Validate deploy secrets
+      - name: Validate SFTP host
         run: |
           set -euo pipefail
           test -n "$SFTP_HOST" || (echo "Missing SFTP_HOST secret" && exit 1)
           test -n "$SFTP_PORT" || (echo "Missing SFTP_PORT secret" && exit 1)
+
+      - name: Validate SFTP user
+        run: |
+          set -euo pipefail
           test -n "$SFTP_USER" || (echo "Missing SFTP_USER secret" && exit 1)
+
+      - name: Validate SFTP password
+        run: |
+          set -euo pipefail
           test -n "$SFTP_PASSWORD" || (echo "Missing SFTP_PASSWORD secret" && exit 1)
 
       - name: Deploy to /yum
