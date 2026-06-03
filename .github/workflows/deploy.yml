@@ -46,6 +46,22 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          trim() {
+            local value="$1"
+            value="${value#"${value%%[![:space:]]*}"}"
+            value="${value%"${value##*[![:space:]]}"}"
+            printf '%s' "$value"
+          }
+          strip_quotes() {
+            local value="$1"
+            if [[ "$value" == \"*\" && "$value" == *\" ]]; then
+              value="${value:1:${#value}-2}"
+            elif [[ "$value" == \'*\' && "$value" == *\' ]]; then
+              value="${value:1:${#value}-2}"
+            fi
+            printf '%s' "$value"
+          }
+
           if [[ -z "${CENIX_HOSTING:-}" ]]; then
             exit 0
           fi
@@ -55,8 +71,8 @@ jobs:
             line="${raw_line%$'\r'}"
             [[ -z "$line" || "$line" == \#* || "$line" != *=* ]] && continue
 
-            key="${line%%=*}"
-            value="${line#*=}"
+            key="$(trim "${line%%=*}")"
+            value="$(strip_quotes "$(trim "${line#*=}")")"
             case "$key" in
               SFTP_HOST|SFTP_PORT|SFTP_USER|SFTP_PASSWORD|SFTP_REMOTE_PATH)
                 {
@@ -92,6 +108,17 @@ jobs:
         run: |
           set -euo pipefail
           test -n "$SFTP_PASSWORD" || (echo "Missing SFTP_PASSWORD secret" && exit 1)
+
+      - name: Test SFTP login
+        run: |
+          set -euo pipefail
+          lftp -u "$SFTP_USER","$SFTP_PASSWORD" -p "$SFTP_PORT" "sftp://$SFTP_HOST" -c "
+            set cmd:fail-exit yes;
+            set sftp:auto-confirm yes;
+            set net:max-retries 1;
+            set net:timeout 15;
+            cls;
+          "
 
       - name: Deploy to /yum
         run: |
