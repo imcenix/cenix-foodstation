@@ -112,18 +112,6 @@ jobs:
           set -euo pipefail
           test -n "$SFTP_PASSWORD" || (echo "Missing SFTP_PASSWORD secret" && exit 1)
 
-      - name: Test SFTP login
-        run: |
-          set -euo pipefail
-          lftp -c "
-            set cmd:fail-exit yes;
-            set sftp:auto-confirm yes;
-            set net:max-retries 1;
-            set net:timeout 15;
-            open -u \"$SFTP_USER\",\"$SFTP_PASSWORD\" -p \"$SFTP_PORT\" \"sftp://$SFTP_HOST\";
-            cls;
-          "
-
       - name: Deploy to /yum
         run: |
           set -euo pipefail
