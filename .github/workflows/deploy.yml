@@ -20,7 +20,7 @@ jobs:
       SFTP_PORT: ${{ secrets.SFTP_PORT || '22' }}
       SFTP_USER: ${{ secrets.SFTP_USER || 'cenix' }}
       SFTP_PASSWORD: ${{ secrets.SFTP_PASSWORD }}
-      SFTP_REMOTE_PATH: ${{ secrets.SFTP_REMOTE_PATH || '/home/cenix/web/imcenix.com/public_html' }}
+      SFTP_REMOTE_PATH: ${{ secrets.SFTP_REMOTE_PATH || 'web/imcenix.com/public_html' }}
       CENIX_HOSTING: ${{ secrets.CENIX_HOSTING }}
 
     steps:
