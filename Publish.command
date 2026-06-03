@@ -38,7 +38,8 @@ if command -v git >/dev/null 2>&1 && [ -d .git ]; then
     git -c user.email="cenix@imcenix.com" -c user.name="Cenix" commit -m "publish $(date '+%Y-%m-%d %H:%M:%S')" >/dev/null 2>&1 || true
   fi
   echo "⬇️  Kéo nội dung mới nhất từ GitHub (gồm bài tạo bằng CMS)..."
-  if ! git pull --no-edit; then
+  git config pull.rebase false 2>/dev/null || true
+  if ! git pull --no-rebase --no-edit; then
     echo "❌ git pull lỗi (có thể xung đột). Dừng để tránh xóa nhầm bài. Xử lý git xong rồi chạy lại."
     read -p "Press Enter to close..."; exit 1
   fi
