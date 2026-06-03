@@ -112,11 +112,12 @@ jobs:
       - name: Test SFTP login
         run: |
           set -euo pipefail
-          lftp -u "$SFTP_USER","$SFTP_PASSWORD" -p "$SFTP_PORT" "sftp://$SFTP_HOST" -c "
+          lftp -c "
             set cmd:fail-exit yes;
             set sftp:auto-confirm yes;
             set net:max-retries 1;
             set net:timeout 15;
+            open -u \"$SFTP_USER\",\"$SFTP_PASSWORD\" -p \"$SFTP_PORT\" \"sftp://$SFTP_HOST\";
             cls;
           "
 
@@ -125,11 +126,12 @@ jobs:
           set -euo pipefail
           ROOT_DIR="${SFTP_REMOTE_PATH%/}"
           YUM_DIR="$ROOT_DIR/$PROJECT_SLUG"
-          lftp -u "$SFTP_USER","$SFTP_PASSWORD" -p "$SFTP_PORT" "sftp://$SFTP_HOST" -c "
+          lftp -c "
             set cmd:fail-exit yes;
             set sftp:auto-confirm yes;
             set net:max-retries 2;
             set net:timeout 20;
+            open -u \"$SFTP_USER\",\"$SFTP_PASSWORD\" -p \"$SFTP_PORT\" \"sftp://$SFTP_HOST\";
             mkdir -p '$YUM_DIR';
             mirror --reverse --verbose --delete --parallel=4 \
               --exclude-glob .DS_Store \
