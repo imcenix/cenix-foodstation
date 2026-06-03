@@ -20,7 +20,7 @@ jobs:
       SFTP_PORT: ${{ secrets.SFTP_PORT || '22' }}
       SFTP_USER: ${{ secrets.SFTP_USER }}
       SFTP_PASSWORD: ${{ secrets.SFTP_PASSWORD }}
-      SFTP_REMOTE_PATH: ${{ secrets.SFTP_REMOTE_PATH }}
+      SFTP_REMOTE_PATH: ${{ secrets.SFTP_REMOTE_PATH || '/home/cenix/web/imcenix.com/public_html' }}
 
     steps:
       - name: Checkout
@@ -48,7 +48,6 @@ jobs:
           test -n "$SFTP_PORT" || (echo "Missing SFTP_PORT secret" && exit 1)
           test -n "$SFTP_USER" || (echo "Missing SFTP_USER secret" && exit 1)
           test -n "$SFTP_PASSWORD" || (echo "Missing SFTP_PASSWORD secret" && exit 1)
-          test -n "$SFTP_REMOTE_PATH" || (echo "Missing SFTP_REMOTE_PATH secret" && exit 1)
 
       - name: Deploy to /yum
         run: |
