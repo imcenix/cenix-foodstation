@@ -21,6 +21,7 @@ jobs:
       SFTP_USER: ${{ secrets.SFTP_USER || 'cenix' }}
       SFTP_PASSWORD: ${{ secrets.SFTP_PASSWORD }}
       SFTP_REMOTE_PATH: ${{ secrets.SFTP_REMOTE_PATH || '/home/cenix/web/imcenix.com/public_html' }}
+      CENIX_HOSTING: ${{ secrets.CENIX_HOSTING }}
 
     steps:
       - name: Checkout
@@ -40,6 +41,41 @@ jobs:
 
       - name: Install lftp
         run: sudo apt-get update && sudo apt-get install -y lftp
+
+      - name: Load Cenix hosting secret bundle
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ -z "${CENIX_HOSTING:-}" ]]; then
+            exit 0
+          fi
+
+          bundle_has_pairs=0
+          while IFS= read -r raw_line || [[ -n "$raw_line" ]]; do
+            line="${raw_line%$'\r'}"
+            [[ -z "$line" || "$line" == \#* || "$line" != *=* ]] && continue
+
+            key="${line%%=*}"
+            value="${line#*=}"
+            case "$key" in
+              SFTP_HOST|SFTP_PORT|SFTP_USER|SFTP_PASSWORD|SFTP_REMOTE_PATH)
+                {
+                  echo "$key<<__CENIX_SECRET__"
+                  echo "$value"
+                  echo "__CENIX_SECRET__"
+                } >> "$GITHUB_ENV"
+                bundle_has_pairs=1
+                ;;
+            esac
+          done <<< "$CENIX_HOSTING"
+
+          if [[ "$bundle_has_pairs" -eq 0 && -z "${SFTP_PASSWORD:-}" ]]; then
+            {
+              echo "SFTP_PASSWORD<<__CENIX_SECRET__"
+              echo "$CENIX_HOSTING"
+              echo "__CENIX_SECRET__"
+            } >> "$GITHUB_ENV"
+          fi
 
       - name: Validate SFTP host
         run: |
