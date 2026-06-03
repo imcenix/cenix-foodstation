@@ -1061,7 +1061,7 @@ const restaurantsWithContent = await Promise.all(
       const emptyStars   = '☆'.repeat(5 - starRating);
       const coverUrl     = `/restaurants/${folder}/cover.jpg`;
       return (
-        <div class="rmodal-panel" id={`rmodal-restaurant-${d.slug}`} data-type={type}>
+        <div class="rmodal-panel" id={`rmodal-restaurant-${folder}`} data-type={type}>
 
           {/* Hero */}
           <div class="rmodal-hero">
@@ -1143,7 +1143,7 @@ const restaurantsWithContent = await Promise.all(
                       class="rmodal-gallery-item"
                       data-lightbox-src={`/restaurants/${folder}/${photo}`}
                       data-lightbox-idx={idx}
-                      data-lightbox-group={d.slug}
+                      data-lightbox-group={folder}
                     >
                       <img
                         src={`/restaurants/${folder}/${photo}`}

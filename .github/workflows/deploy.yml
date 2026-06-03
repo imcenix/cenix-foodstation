@@ -3,15 +3,6 @@ name: Deploy FoodStation
 on:
   push:
     branches: [main]
-    paths:
-      - 'assets/**'
-      - 'public/**'
-      - 'scripts/**'
-      - 'src/**'
-      - 'astro.config.mjs'
-      - 'package.json'
-      - 'package-lock.json'
-      - 'tsconfig.json'
   workflow_dispatch:
 
 concurrency:
