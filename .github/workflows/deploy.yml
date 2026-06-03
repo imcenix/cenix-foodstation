@@ -135,10 +135,8 @@ jobs:
             set net:max-retries 2;
             set net:timeout 20;
             open -u \"$SFTP_USER\",\"$SFTP_PASSWORD\" -p \"$SFTP_PORT\" \"sftp://$SFTP_HOST\";
-            mkdir -p '$YUM_DIR';
             mirror --reverse --verbose --delete --parallel=4 \
               --exclude-glob .DS_Store \
               --exclude-glob '*.log' \
               dist/ '$YUM_DIR';
-            chmod -R 755 '$YUM_DIR';
           "
