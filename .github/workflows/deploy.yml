@@ -50,21 +50,29 @@ jobs:
       - name: Install lftp
         run: sudo apt-get update && sudo apt-get install -y lftp
 
+      - name: Validate deploy secrets
+        run: |
+          set -euo pipefail
+          test -n "$SFTP_HOST" || (echo "Missing SFTP_HOST secret" && exit 1)
+          test -n "$SFTP_PORT" || (echo "Missing SFTP_PORT secret" && exit 1)
+          test -n "$SFTP_USER" || (echo "Missing SFTP_USER secret" && exit 1)
+          test -n "$SFTP_PASSWORD" || (echo "Missing SFTP_PASSWORD secret" && exit 1)
+          test -n "$SFTP_REMOTE_PATH" || (echo "Missing SFTP_REMOTE_PATH secret" && exit 1)
+
       - name: Deploy to /yum
         run: |
           set -euo pipefail
           ROOT_DIR="${SFTP_REMOTE_PATH%/}"
           YUM_DIR="$ROOT_DIR/$PROJECT_SLUG"
-          lftp -u "$SFTP_USER","$SFTP_PASSWORD" -p "$SFTP_PORT" "sftp://$SFTP_HOST" <<LFTP
-          set cmd:fail-exit yes
-          set sftp:auto-confirm yes
-          set net:max-retries 2
-          set net:timeout 20
-          mkdir -p "$YUM_DIR"
-          mirror --reverse --verbose --delete --parallel=4 \
-            --exclude-glob .DS_Store \
-            --exclude-glob *.log \
-            dist/ "$YUM_DIR"
-          chmod -R 755 "$YUM_DIR"
-          bye
-          LFTP
+          lftp -u "$SFTP_USER","$SFTP_PASSWORD" -p "$SFTP_PORT" "sftp://$SFTP_HOST" -c "
+            set cmd:fail-exit yes;
+            set sftp:auto-confirm yes;
+            set net:max-retries 2;
+            set net:timeout 20;
+            mkdir -p '$YUM_DIR';
+            mirror --reverse --verbose --delete --parallel=4 \
+              --exclude-glob .DS_Store \
+              --exclude-glob '*.log' \
+              dist/ '$YUM_DIR';
+            chmod -R 755 '$YUM_DIR';
+          "
