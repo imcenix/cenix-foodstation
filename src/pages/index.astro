@@ -3,6 +3,8 @@ import { getCollection, render } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Hero from '../components/Hero.astro';
 import RestaurantCard from '../components/RestaurantCard.astro';
+import { statSync } from 'node:fs';
+import { join as pathJoin } from 'node:path';
 
 const allEntries = (await getCollection('restaurants'))
   .filter((r) => !r.id.startsWith('_template'));
@@ -49,8 +51,6 @@ const contentRows = [
 const transparentPixel = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==';
 
 // Cache-bust logo intro theo mtime
-import { statSync } from 'node:fs';
-import { join as pathJoin } from 'node:path';
 let introLogoVersion = '1';
 try {
   introLogoVersion = String(Math.round(
