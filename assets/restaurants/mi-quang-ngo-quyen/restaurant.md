@@ -4,7 +4,7 @@ name: Mì Quảng Ngô Quyền
 slug: mi-quang-ngo-quyen
 category: dalat
 explore_featured: false
-favorite: false
+favorite: true
 order: 10
 neighborhood: Đà Lạt
 address: Ngô Quyền, Phường 6, Đà Lạt
