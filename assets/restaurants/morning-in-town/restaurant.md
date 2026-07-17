@@ -3,8 +3,8 @@ type: restaurant
 name: Morning in Town
 slug: morning-in-town
 category: dalat
-explore_featured: false
-favorite: false
+explore_featured: true
+favorite: true
 order: 1
 neighborhood: Đà Lạt
 address: 25 Đường 3/4, Phường 3, Đà Lạt
