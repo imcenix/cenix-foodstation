@@ -14,6 +14,7 @@ signature_dishes:
   - Cà phê sáng
   - Trà trái cây
 tagline: Cafe phong cách châu Âu, ngồi nhìn thung lũng đón bình minh Đà Lạt.
+rating: 5
 ---
 Quán cafe chuẩn style tân cổ điển châu Âu nằm ngay mặt đường 3/4, lưng tựa thung lũng. Sáng sớm ghé đây làm ly cà phê nóng, ngắm sương tan là đúng bài Đà Lạt.
 
