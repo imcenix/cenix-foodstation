@@ -3,12 +3,12 @@ type: restaurant
 category: dinner
 name: Cơm tấm Hồng
 slug: com-tam-hong
-order: 1
+order: 2
 explore_featured: true
 favorite: true
 neighborhood: Quận 4
 address: 413 Nguyễn Trãi, Quận 5, TP.HCM
-maps_url: https://maps.app.goo.gl/example
+maps_url: "https://maps.app.goo.gl/example"
 cuisine: Món Việt
 rating: 5
 price_range: 65k-100k
