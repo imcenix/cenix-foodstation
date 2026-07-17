@@ -4,7 +4,7 @@ name: Hủ tiếu Bà Sáu Dần
 slug: hu-tieu-ba-sau-dan
 category: dalat
 explore_featured: false
-favorite: false
+favorite: true
 order: 2
 neighborhood: Đà Lạt
 address: Hoàng Diệu, Phường 5, Đà Lạt
