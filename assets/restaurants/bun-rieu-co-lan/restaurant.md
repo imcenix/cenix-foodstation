@@ -4,7 +4,7 @@ name: Bún riêu Cô Lan
 slug: bun-rieu-co-lan
 category: dalat
 explore_featured: false
-favorite: false
+favorite: true
 order: 7
 neighborhood: Đà Lạt
 address: 29 Nguyễn Văn Trỗi, Phường 1, Đà Lạt
