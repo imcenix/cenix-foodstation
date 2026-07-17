@@ -4,7 +4,7 @@ name: Tiềm Thắng
 slug: tiem-thang
 category: dalat
 explore_featured: false
-favorite: false
+favorite: true
 order: 17
 neighborhood: Đà Lạt
 address: 237 Hai Bà Trưng, Đà Lạt
