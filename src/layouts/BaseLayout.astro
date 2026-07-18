@@ -74,6 +74,7 @@ const socialImage = new URL('/images/cenix-food-station-og.png', site).toString(
     </noscript>
   </head>
   <body data-page={activeNav} id="top">
+    <script is:inline src="/analytics.js" defer></script>
     <Nav activeNav={activeNav} />
     <main class="app-main">
       <slot />
