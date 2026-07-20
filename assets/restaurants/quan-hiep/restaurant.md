@@ -17,6 +17,8 @@ tagline: Quán ăn sáng kèm cà phê kiểu local, giá mềm.
 photos:
   - photos/714966313_1046681211021488_3387835604838028706_n.jpg
   - photos/715592436_1046681244354818_2870481143038926697_n.jpg
+rating: 4
+price_range: 40-55k
 ---
 Quán ăn sáng của dân địa phương trên đường Nguyễn Thị Nghĩa.
 
