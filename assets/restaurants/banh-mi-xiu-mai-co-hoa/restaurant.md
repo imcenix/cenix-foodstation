@@ -14,6 +14,8 @@ signature_dishes:
   - Xíu mại chén
   - Trứng ốp la bơ
 tagline: Chén xíu mại nóng hổi chấm bánh mì giòn — bữa sáng quốc dân Đà Lạt.
+rating: 3
+price_range: 35-45k
 ---
 Xíu mại chén kiểu Đà Lạt chính hiệu: chén nước dùng nóng hổi, viên xíu mại mềm, thêm trứng ốp la bơ béo ngậy. Bẻ bánh mì giòn chấm ngập chén là hết ý.
 
