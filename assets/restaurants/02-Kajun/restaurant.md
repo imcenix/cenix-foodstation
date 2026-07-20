@@ -6,9 +6,9 @@ slug: mi-cua-kajun
 order: 2
 explore_featured: true
 favorite: false
-neighborhood: Quận 10
-address:
-maps_url: https://maps.app.goo.gl/example
+neighborhood: Quận 6
+address:  356G Lê Quang Sung P6 - Q6.
+maps_url: "https://maps.app.goo.gl/example"
 cuisine: Món Âu
 rating: 4
 price_range: 90k-120k
@@ -19,12 +19,6 @@ photos:
   - photos/01.jpg
 tagline: Mì ý cua giá vừa nhưng chất lượng miễn bàn
 ---
+Tóm gọn lại thì nó là mì ý của Pizza 4P nhưng giá rẻ, thế thôi. Giá tầm 90k cho phần size XL, nhưng chất lượng thì rất ok so với giá.
 
-## Cảm nhận của Cenix
-
-Bún chả ở đây nướng trên than hoa thật, không phải bếp gas — mùi khói thơm đặc trưng. Chả viên đậm, hơi cháy cạnh; chả miếng béo vừa phải. Nước chấm pha chua ngọt cân bằng.
-
-## Tip đặt món
-
-- Combo "bún chả + nem cua bể" là tối ưu
-- Xin thêm tỏi và ớt tươi để pha nước chấm cay hơn
+Bán mang về nên đặt sớm để quán có thời gian làm và giao không bị trễ
