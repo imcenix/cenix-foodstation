@@ -14,5 +14,10 @@ signature_dishes:
   - Món ăn sáng
   - Cà phê
 tagline: Quán ăn sáng kèm cà phê kiểu local, giá mềm.
+photos:
+  - photos/714966313_1046681211021488_3387835604838028706_n.jpg
+  - photos/715592436_1046681244354818_2870481143038926697_n.jpg
 ---
-Quán ăn sáng kiêm cà phê quen thuộc của dân địa phương trên đường Nguyễn Thị Nghĩa. Đồ ăn nóng sốt, giá mềm, ngồi ăn xong làm thêm ly cà phê là trọn buổi sáng.
+Quán ăn sáng của dân địa phương trên đường Nguyễn Thị Nghĩa.
+
+Có bún bò, mì quảng, đặc biệt ngày rằm có mì quảng chay.
