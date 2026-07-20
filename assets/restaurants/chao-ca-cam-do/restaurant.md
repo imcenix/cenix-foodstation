@@ -1,7 +1,7 @@
 ---
 type: restaurant
 explore_featured: false
-favorite: false
+favorite: true
 slug: chao-ca-cam-do
 name: Cháo Cá Cẩm Đô
 category: dalat
