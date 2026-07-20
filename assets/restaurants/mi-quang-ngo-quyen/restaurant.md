@@ -13,5 +13,7 @@ cuisine: Mì Quảng
 signature_dishes:
   - Mì Quảng
 tagline: Tô mì Quảng bình dân trên đường Ngô Quyền, giá học sinh.
+rating: 5
+price_range: 30k
 ---
 Quán mì Quảng bình dân của dân local trên đường Ngô Quyền. Tô đầy đủ, giả mềm, chiều chiều mát trời lên ăn xế là đẹp.
