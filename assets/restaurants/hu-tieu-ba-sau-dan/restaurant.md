@@ -13,6 +13,9 @@ cuisine: Hủ tiếu
 signature_dishes:
   - Hủ tiếu Nam Vang
 tagline: Hủ tiếu gia truyền lâu đời, nước xương hầm ngọt thanh.
+price_range: 55-65
+photos:
+  - photos/5f21bf98-a63c-47ef-b29c-b0f1cfc7fae2.jpg
 ---
 Thương hiệu hủ tiếu lâu đời của Đà Lạt, nước dùng ninh xương ngọt thanh, thịt mềm vừa vặn. Sáng se lạnh húp tô hủ tiếu nóng là tỉnh cả người.
 
