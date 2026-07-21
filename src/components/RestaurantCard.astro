@@ -32,6 +32,8 @@ const stars = starRating > 0
   data-cuisine={data.cuisine}
   data-neighborhood={data.neighborhood}
   data-meal-tags={mealTags}
+  data-favorite={data.favorite ? '1' : undefined}
+  data-explore={data.explore_featured ? '1' : undefined}
   data-modal={`restaurant-${folder}`}
 >
   <div class="r-card-media">

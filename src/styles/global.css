@@ -548,6 +548,59 @@ ul, ol {
   display: none;
 }
 
+.content-rows[hidden],
+.category-view[hidden] {
+  display: none;
+}
+
+.category-view {
+  display: grid;
+  gap: 1.45rem;
+}
+
+/* ── Nút ‹ › điều hướng track ngang ─────────────────────────── */
+.content-row-actions {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.track-nav {
+  width: 34px;
+  height: 34px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  border: 1.5px solid rgba(255, 77, 141, 0.22);
+  background: rgba(255, 255, 255, 0.80);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  color: var(--color-pink);
+  font-size: 1.15rem;
+  font-weight: 800;
+  line-height: 1;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s, border-color 0.2s, transform 0.18s;
+}
+.track-nav:hover {
+  background: var(--color-pink);
+  border-color: var(--color-pink);
+  color: #fff;
+}
+
+/* ── Grid "Tất cả các quán": wrap xuống hàng, không scroll ngang ── */
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  gap: 1rem;
+}
+
+.card-grid .r-card {
+  box-shadow: none;
+}
+
 .content-row-head {
   display: flex;
   align-items: center;
@@ -1123,6 +1176,15 @@ ul, ol {
 
   /* Desktop "Xem thêm" in header: hidden on mobile */
   .content-row-next--desktop { display: none; }
+
+  /* Nút ‹ › : ẩn trên mobile (vuốt tay) */
+  .track-nav { display: none; }
+
+  /* Grid tất cả quán: 2 cột */
+  .card-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.7rem;
+  }
 
   /* Cards: ~1.8 visible per row (20% wider than before) */
   .content-row-track {

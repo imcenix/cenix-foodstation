@@ -14,7 +14,7 @@ address: Lô LK, KQH 128, Yersin, Lâm Viên - Đà Lạt
 rating: 5
 price_range: 65k-300k
 visited: 2023-05
-slug: Test 1
+slug: quan-hy-map
 ---
 Một chiếc quán với đồ ăn rất ngon, phù hợp cho những buổi tối trời se lạnh ở Đà Lạt.
 

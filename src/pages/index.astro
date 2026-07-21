@@ -85,7 +85,7 @@ const categoryMeta: Record<string, { label: string; icon: string; bg: string; co
   drinks:    { label: 'Ăn nhậu',   icon: '♨',  bg: 'rgba(255,77,141,.13)',  color: '#e83a78' },
   snack:     { label: 'Ăn vặt',    icon: '✦',  bg: 'rgba(167,139,250,.16)', color: '#7c3aed' },
   dalat:     { label: 'Đà Lạt',    icon: '🌿', bg: 'rgba(77,212,172,.18)',  color: '#1ba87e' },
-  cook:      { label: 'Cenix Cook', icon: '👨‍🍳', bg: 'rgba(255,150,50,.14)',  color: '#c05c00' },
+  cook:      { label: 'Cà Can Cook', icon: '👨‍🍳', bg: 'rgba(255,150,50,.14)',  color: '#c05c00' },
   collect:   { label: 'Sưu tầm',   icon: '🔖', bg: 'rgba(100,100,200,.12)', color: '#4040aa' },
 };
 
@@ -1033,10 +1033,13 @@ const restaurantsWithContent = await Promise.all(
                 <section class="content-row" data-content-row={row.id} data-row-filter={row.filter}>
                   <div class="content-row-head">
                     <h3 data-row-title={row.id}>{row.title}</h3>
-                    {/* Desktop: Xem thêm in header */}
-                    <button class="content-row-next content-row-next--desktop" type="button" aria-label={`Xem thêm ${row.title}`}>
-                      Xem thêm →
-                    </button>
+                    <div class="content-row-actions">
+                      <button class="track-nav" type="button" data-track-prev aria-label="Lùi lại">‹</button>
+                      <button class="track-nav" type="button" data-track-next aria-label="Xem tiếp">›</button>
+                      <button class="content-row-next content-row-next--desktop" type="button" data-row-more={row.filter} aria-label={`Xem thêm ${row.title}`}>
+                        Xem thêm →
+                      </button>
+                    </div>
                   </div>
                   <div class="content-row-track">
                     {rowCards.slice(0, 10).map((r) => (
@@ -1061,6 +1064,34 @@ const restaurantsWithContent = await Promise.all(
                 </section>
               );
             })}
+          </div>
+
+          <div class="category-view" data-category-view hidden>
+            <section class="content-row" data-fav-section>
+              <div class="content-row-head">
+                <h3 data-fav-title>Tui hay ăn nhất</h3>
+                <div class="content-row-actions">
+                  <button class="track-nav" type="button" data-track-prev aria-label="Lùi lại">‹</button>
+                  <button class="track-nav" type="button" data-track-next aria-label="Xem tiếp">›</button>
+                </div>
+              </div>
+              <div class="content-row-track" data-fav-track>
+                {restaurants.filter((r) => r.data.favorite).map((r) => (
+                  <RestaurantCard restaurant={r} folder={folderSlug(r.id)} mealTags={getMealTags(r)} />
+                ))}
+              </div>
+            </section>
+
+            <section class="content-row" data-all-section>
+              <div class="content-row-head">
+                <h3 data-all-title>Tất cả các quán</h3>
+              </div>
+              <div class="card-grid" data-all-grid>
+                {restaurants.map((r) => (
+                  <RestaurantCard restaurant={r} folder={folderSlug(r.id)} mealTags={getMealTags(r)} />
+                ))}
+              </div>
+            </section>
           </div>
           <p class="no-results" data-no-results hidden>
             Chưa có quán nào khớp bộ lọc này.
@@ -1416,7 +1447,7 @@ const restaurantsWithContent = await Promise.all(
       lines: ['Quán tui hay ăn', 'Các quán local Đà Lạt'],
     },
     cook: {
-      kicker: 'Cenix can Cook',
+      kicker: 'Cà Can Cook',
       title: 'Đồ ăn tui nấu',
       lines: ['Đồ tui nấu', 'Reels bếp núc'],
     },
@@ -1424,6 +1455,11 @@ const restaurantsWithContent = await Promise.all(
       kicker: 'Sưu tầm',
       title: 'Bài hay sưu tầm',
       lines: ['Bài post sưu tầm', 'Reels sưu tầm'],
+    },
+    explore_featured: {
+      kicker: 'Khám phá',
+      title: 'Tui hay ăn nhất',
+      lines: ['Tui hay ăn nhất'],
     },
   };
 
@@ -1436,33 +1472,70 @@ const restaurantsWithContent = await Promise.all(
 
   const initialCategory = document.body.dataset.category ?? 'all';
   const state = { category: initialCategory, neighborhood: 'all' };
-  const cards       = document.querySelectorAll<HTMLElement>('.r-card');
   const resultCount = document.querySelector<HTMLElement>('[data-result-count]');
   const noResults   = document.querySelector<HTMLElement>('[data-no-results]');
   const heroTitle    = document.querySelector<HTMLElement>('[data-hero-title]');
   const heroSubtitle = document.querySelector<HTMLElement>('[data-hero-subtitle]');
   const heroImage    = document.querySelector<HTMLImageElement>('[data-hero-image]');
+
+  const homeView   = document.querySelector<HTMLElement>('[data-content-rows]');
+  const catView    = document.querySelector<HTMLElement>('[data-category-view]');
+  const favSection = document.querySelector<HTMLElement>('[data-fav-section]');
+  const favTitleEl = document.querySelector<HTMLElement>('[data-fav-title]');
+  const allTitleEl = document.querySelector<HTMLElement>('[data-all-title]');
   const contentRows = document.querySelectorAll<HTMLElement>('[data-content-row]');
+
+  const homeCards = homeView ? Array.from(homeView.querySelectorAll<HTMLElement>('.r-card')) : [];
+  const favCards  = Array.from(document.querySelectorAll<HTMLElement>('[data-fav-track] .r-card'));
+  const gridCards = Array.from(document.querySelectorAll<HTMLElement>('[data-all-grid] .r-card'));
+
+  const matchesCategory = (card: HTMLElement) => {
+    if (state.category === 'all') return true;
+    if (state.category === 'explore_featured') return card.dataset.explore === '1';
+    return (card.dataset.mealTags ?? 'all').split(' ').includes(state.category);
+  };
+  const matchesNeighborhood = (card: HTMLElement) =>
+    state.neighborhood === 'all' || (card.dataset.neighborhood ?? '') === state.neighborhood;
 
   const apply = () => {
     const visibleSlugs = new Set<string>();
-    cards.forEach((card) => {
-      const n    = card.dataset.neighborhood ?? '';
-      const tags = (card.dataset.mealTags ?? 'all').split(' ');
-      const show =
-        (state.category === 'all' || tags.includes(state.category)) &&
-        (state.neighborhood === 'all' || n === state.neighborhood);
-      card.style.display = show ? '' : 'none';
-      if (show) visibleSlugs.add(card.dataset.modal ?? card.textContent ?? '');
-    });
-    contentRows.forEach((row) => {
-      const visibleInRow = Array.from(row.querySelectorAll<HTMLElement>('.r-card'))
-        .some((card) => card.style.display !== 'none');
-      row.hidden = !visibleInRow;
-    });
-    const visible = visibleSlugs.size;
-    if (resultCount) resultCount.textContent = `${visible} quán`;
-    if (noResults)   noResults.hidden = visible !== 0;
+
+    if (state.category === 'all') {
+      /* ── Trang chủ: các hàng scroll ngang, tối đa 10 bài ── */
+      if (homeView) homeView.hidden = false;
+      if (catView)  catView.hidden  = true;
+      homeCards.forEach((card) => {
+        const show = matchesNeighborhood(card);
+        card.style.display = show ? '' : 'none';
+        if (show) visibleSlugs.add(card.dataset.modal ?? '');
+      });
+      contentRows.forEach((row) => {
+        const anyVisible = Array.from(row.querySelectorAll<HTMLElement>('.r-card'))
+          .some((card) => card.style.display !== 'none');
+        row.hidden = !anyVisible;
+      });
+    } else {
+      /* ── Trang listing category: hàng favorite + grid tất cả quán ── */
+      if (homeView) homeView.hidden = true;
+      if (catView)  catView.hidden  = false;
+
+      let favVisible = 0;
+      favCards.forEach((card) => {
+        const show = card.dataset.favorite === '1' && matchesCategory(card) && matchesNeighborhood(card);
+        card.style.display = show ? '' : 'none';
+        if (show) favVisible += 1;
+      });
+      if (favSection) favSection.hidden = favVisible === 0 || state.category === 'explore_featured';
+
+      gridCards.forEach((card) => {
+        const show = matchesCategory(card) && matchesNeighborhood(card);
+        card.style.display = show ? '' : 'none';
+        if (show) visibleSlugs.add(card.dataset.modal ?? '');
+      });
+    }
+
+    if (resultCount) resultCount.textContent = `${visibleSlugs.size} quán`;
+    if (noResults)   noResults.hidden = visibleSlugs.size !== 0;
   };
 
   const renderPageChrome = (value: string) => {
@@ -1471,22 +1544,21 @@ const restaurantsWithContent = await Promise.all(
     if (heroTitle && hero) heroTitle.textContent = hero.title;
     if (heroSubtitle && hero) heroSubtitle.textContent = hero.subtitle;
     if (heroImage && hero) {
-      // Browsers prefer srcset over src. Update both or the initial
-      // Khám phá mascot would remain visible for every category.
+      // Browsers prefer srcset over src, so update both for each mascot.
       heroImage.srcset = hero.id === 'all'
         ? '/images/characters-optimized/cenix-kham-pha-sm.png 280w, /images/characters-optimized/cenix-kham-pha.png 720w'
         : hero.image;
       heroImage.src = hero.image;
     }
-    meta.lines.forEach((line, index) => {
-      const row = document.querySelector<HTMLElement>(`[data-content-row="row-${index + 1}"]`);
-      const title = document.querySelector<HTMLElement>(`[data-row-title="row-${index + 1}"]`);
-      if (row) row.hidden = false;
-      if (title) title.textContent = line;
-    });
-    for (let i = meta.lines.length + 1; i <= 3; i += 1) {
-      const row = document.querySelector<HTMLElement>(`[data-content-row="row-${i}"]`);
-      if (row) row.hidden = true;
+
+    if (value === 'all') {
+      meta.lines.forEach((line, index) => {
+        const title = document.querySelector<HTMLElement>('[data-row-title="row-' + (index + 1) + '"]');
+        if (title) title.textContent = line;
+      });
+    } else {
+      if (favTitleEl) favTitleEl.textContent = meta.lines[0] ?? 'Tui hay ăn nhất';
+      if (allTitleEl) allTitleEl.textContent = 'Tất cả các quán';
     }
   };
 
@@ -1504,23 +1576,21 @@ const restaurantsWithContent = await Promise.all(
     state.neighborhood = (e.currentTarget as HTMLSelectElement).value;
     apply();
   });
-  /* Desktop "Xem thêm" in header → scroll the track */
-  document.querySelectorAll<HTMLButtonElement>('.content-row-next--desktop').forEach((button) => {
+
+  /* Nút ‹ › lướt track ngang (hoạt động 2 chiều) */
+  document.querySelectorAll<HTMLButtonElement>('[data-track-prev], [data-track-next]').forEach((button) => {
     button.addEventListener('click', () => {
       const track = button.closest('.content-row')?.querySelector<HTMLElement>('.content-row-track');
       if (!track) return;
-      track.scrollBy({ left: Math.round(track.clientWidth * 0.85), behavior: 'smooth' });
+      const dir = 'trackPrev' in button.dataset ? -1 : 1;
+      track.scrollBy({ left: dir * Math.round(track.clientWidth * 0.85), behavior: 'smooth' });
     });
   });
 
-  /* Mobile "Xem thêm" card at end of track → switch to that category filter */
+  /* "Xem thêm" (desktop header + mobile card cuối track) → vào trang listing */
   document.querySelectorAll<HTMLButtonElement>('[data-row-more]').forEach((button) => {
     button.addEventListener('click', () => {
-      const filter = button.dataset.rowMore ?? 'all';
-      /* Map row-filter value to category key */
-      const cat = filter === 'explore_featured' ? 'all' : filter;
-      setCategory(cat);
-      /* Scroll to top of content */
+      setCategory(button.dataset.rowMore ?? 'all');
       document.getElementById('explore')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     });
   });
