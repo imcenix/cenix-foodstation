@@ -2,6 +2,7 @@
 interface Props {
   stats?: { num: string; label: string }[];
   neighborhoods?: string[];
+  initialCategory?: string;
 }
 
 const {
@@ -11,6 +12,7 @@ const {
     { num: '0',  label: 'Areas' },
   ],
   neighborhoods = [],
+  initialCategory = 'all',
 } = Astro.props;
 
 const heroPages = [
@@ -64,7 +66,10 @@ const heroPages = [
   },
 ];
 
-const defaultHero = heroPages[0];
+const defaultHero = heroPages.find((page) => page.id === initialCategory) ?? heroPages[0];
+const defaultSrcset = defaultHero.id === 'all'
+  ? '/images/characters-optimized/cenix-kham-pha-sm.png 280w, /images/characters-optimized/cenix-kham-pha.png 720w'
+  : defaultHero.image;
 ---
 
 <section class="hero" data-hero>
@@ -99,7 +104,7 @@ const defaultHero = heroPages[0];
   <div class="hero-visual" aria-hidden="true">
     <img
       src={defaultHero.image}
-      srcset="/images/characters-optimized/cenix-kham-pha-sm.png 280w, /images/characters-optimized/cenix-kham-pha.png 720w"
+      srcset={defaultSrcset}
       sizes="(max-width: 760px) 38vw, 34vw"
       alt=""
       width="1024"

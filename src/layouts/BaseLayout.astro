@@ -7,12 +7,14 @@ interface Props {
   title: string;
   description?: string;
   activeNav?: 'home' | 'all' | 'about';
+  initialCategory?: string;
 }
 
 const {
   title,
   description = "Cenix's Food Station — bộ sưu tập các quán ăn ngon đã đi qua.",
   activeNav = 'home',
+  initialCategory = 'all',
 } = Astro.props;
 
 const site = Astro.site ?? new URL('https://yum.imcenix.com');
@@ -73,8 +75,9 @@ const socialImage = new URL('/images/cenix-food-station-og.png', site).toString(
       />
     </noscript>
   </head>
-  <body data-page={activeNav} id="top">
-    <Nav activeNav={activeNav} />
+  <body data-page={activeNav} data-category={initialCategory} id="top">
+    <script is:inline src="/analytics.js" defer></script>
+    <Nav activeNav={activeNav} initialCategory={initialCategory} />
     <main class="app-main">
       <slot />
       <Footer />

@@ -6,6 +6,13 @@ import RestaurantCard from '../components/RestaurantCard.astro';
 import { statSync } from 'node:fs';
 import { join as pathJoin } from 'node:path';
 
+interface Props { initialCategory?: string }
+const categoryRoutes = ['all', 'breakfast', 'dinner', 'drinks', 'snack', 'dalat', 'cook', 'collect'] as const;
+const requestedCategory = Astro.props.initialCategory ?? 'all';
+const initialCategory = categoryRoutes.includes(requestedCategory as (typeof categoryRoutes)[number])
+  ? requestedCategory
+  : 'all';
+
 const allEntries = (await getCollection('restaurants'))
   .filter((r) => !r.id.startsWith('_template'));
 
@@ -21,6 +28,18 @@ allEntries.sort((a, b) => {
 const restaurants = allEntries;
 
 const folderSlug = (id: string) => id.split('/')[0];
+
+// cover.jpg always keeps the same filename, so use its mtime to invalidate
+// browser/CDN caches whenever CMS replaces the restaurant cover.
+const getCoverVersion = (folder: string) => {
+  try {
+    return String(Math.round(
+      statSync(pathJoin(process.cwd(), 'assets', 'restaurants', folder, 'cover.jpg')).mtimeMs
+    ));
+  } catch {
+    return '1';
+  }
+};
 
 /* Category dùng explicit field, fallback type→category */
 const getCategory = (r: (typeof allEntries)[number]) => {
@@ -85,6 +104,7 @@ const restaurantsWithContent = await Promise.all(
       r,
       Content,
       folder: folderSlug(r.id),
+      coverVersion: getCoverVersion(folderSlug(r.id)),
       category,
       catMeta,
       stars: starRating > 0 ? '★'.repeat(starRating) + '☆'.repeat(5 - starRating) : '',
@@ -890,7 +910,7 @@ const restaurantsWithContent = await Promise.all(
 }
 </style>
 
-<BaseLayout title="Cenix's Food Station — quán ngon đã đi" activeNav="home">
+<BaseLayout title="Cenix's Food Station — quán ngon đã đi" activeNav="home" initialCategory={initialCategory}>
 
   <!-- ================================================================
        INTRO OVERLAY
@@ -985,7 +1005,7 @@ const restaurantsWithContent = await Promise.all(
   <!-- ================================================================
        HOMEPAGE CONTENT
        ================================================================ -->
-  <Hero neighborhoods={neighborhoods} />
+  <Hero neighborhoods={neighborhoods} initialCategory={initialCategory} />
 
   <section class="restaurants">
     <div class="container">
@@ -1020,7 +1040,12 @@ const restaurantsWithContent = await Promise.all(
                   </div>
                   <div class="content-row-track">
                     {rowCards.slice(0, 10).map((r) => (
-                      <RestaurantCard restaurant={r} folder={folderSlug(r.id)} mealTags={getMealTags(r)} />
+                      <RestaurantCard
+                        restaurant={r}
+                        folder={folderSlug(r.id)}
+                        mealTags={getMealTags(r)}
+                        coverVersion={getCoverVersion(folderSlug(r.id))}
+                      />
                     ))}
                     {/* Mobile: Xem thêm as last card in track */}
                     <button
@@ -1062,7 +1087,7 @@ const restaurantsWithContent = await Promise.all(
 
   <div id="rmodal-overlay" class="rmodal-overlay" aria-modal="true" role="dialog">
 
-    {restaurantsWithContent.map(({ r, Content, folder, category, catMeta, starRating, visitedLabel }) => {
+    {restaurantsWithContent.map(({ r, Content, folder, coverVersion, category, catMeta, starRating, visitedLabel }) => {
       const d = r.data;
       const type         = d.type ?? 'restaurant';
       const isRestaurant = type === 'restaurant';
@@ -1070,7 +1095,7 @@ const restaurantsWithContent = await Promise.all(
       const isCollect    = type === 'collect';
       const filledStars  = '★'.repeat(starRating);
       const emptyStars   = '☆'.repeat(5 - starRating);
-      const coverUrl     = `/restaurants/${folder}/cover.jpg`;
+      const coverUrl     = `/restaurants/${folder}/cover.jpg?v=${coverVersion}`;
       return (
         <div class="rmodal-panel" id={`rmodal-restaurant-${folder}`} data-type={type}>
 
@@ -1187,6 +1212,12 @@ const restaurantsWithContent = await Promise.all(
     const btn = document.getElementById('ov-explore-btn');
     const xucBtn = document.getElementById('ov-xuc-btn');
     if (!ov) return;
+
+    // Category routes should open directly without replaying the homepage intro.
+    if ((document.body.dataset.category ?? 'all') !== 'all') {
+      ov.style.display = 'none';
+      return;
+    }
 
     /* ── Skip intro entirely on mobile (≤760px) ─────────────── */
     if (window.innerWidth <= 760) {
@@ -1403,7 +1434,8 @@ const restaurantsWithContent = await Promise.all(
     catch { return []; }
   })();
 
-  const state = { category: 'all', neighborhood: 'all' };
+  const initialCategory = document.body.dataset.category ?? 'all';
+  const state = { category: initialCategory, neighborhood: 'all' };
   const cards       = document.querySelectorAll<HTMLElement>('.r-card');
   const resultCount = document.querySelector<HTMLElement>('[data-result-count]');
   const noResults   = document.querySelector<HTMLElement>('[data-no-results]');
@@ -1438,7 +1470,14 @@ const restaurantsWithContent = await Promise.all(
     const hero = heroPages.find((item) => item.id === value) ?? heroPages[0];
     if (heroTitle && hero) heroTitle.textContent = hero.title;
     if (heroSubtitle && hero) heroSubtitle.textContent = hero.subtitle;
-    if (heroImage && hero) heroImage.src = hero.image;
+    if (heroImage && hero) {
+      // Browsers prefer srcset over src. Update both or the initial
+      // Khám phá mascot would remain visible for every category.
+      heroImage.srcset = hero.id === 'all'
+        ? '/images/characters-optimized/cenix-kham-pha-sm.png 280w, /images/characters-optimized/cenix-kham-pha.png 720w'
+        : hero.image;
+      heroImage.src = hero.image;
+    }
     meta.lines.forEach((line, index) => {
       const row = document.querySelector<HTMLElement>(`[data-content-row="row-${index + 1}"]`);
       const title = document.querySelector<HTMLElement>(`[data-row-title="row-${index + 1}"]`);
@@ -1452,12 +1491,8 @@ const restaurantsWithContent = await Promise.all(
   };
 
   const setCategory = (value: string) => {
-    state.category = value;
-    document.querySelectorAll<HTMLButtonElement>('[data-sidebar-category]').forEach((c) =>
-      c.classList.toggle('active', c.dataset.sidebarCategory === value)
-    );
-    renderPageChrome(value);
-    apply();
+    const nextUrl = value === 'all' ? '/' : '/' + value;
+    if (window.location.pathname !== nextUrl) window.location.assign(nextUrl);
   };
 
   document.querySelectorAll<HTMLButtonElement>('[data-sidebar-category]').forEach((item) =>
@@ -1490,7 +1525,8 @@ const restaurantsWithContent = await Promise.all(
     });
   });
 
-  renderPageChrome('all');
+  renderPageChrome(state.category);
+  apply();
   </script>
 
   <!-- Restaurant Modal Controller -->

@@ -5,12 +5,13 @@ interface Props {
   restaurant: CollectionEntry<'restaurants'>;
   folder: string;
   mealTags?: string;
+  coverVersion?: string;
 }
 
-const { restaurant, folder, mealTags = 'all' } = Astro.props;
+const { restaurant, folder, mealTags = 'all', coverVersion = '1' } = Astro.props;
 const { data } = restaurant;
-const coverUrl = `/restaurants/${folder}/cover-card.jpg`;
-const fallbackCoverUrl = `/restaurants/${folder}/cover.jpg`;
+const coverUrl = `/restaurants/${folder}/cover-card.jpg?v=${coverVersion}`;
+const fallbackCoverUrl = `/restaurants/${folder}/cover.jpg?v=${coverVersion}`;
 
 const type        = data.type ?? 'restaurant';
 const isRestaurant = type === 'restaurant';

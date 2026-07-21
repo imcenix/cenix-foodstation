@@ -2,6 +2,9 @@
 import { statSync } from 'node:fs';
 import { join } from 'node:path';
 
+interface Props { initialCategory?: string }
+const { initialCategory = 'all' } = Astro.props;
+
 // Cache-bust theo mtime của file logo → đổi logo là URL đổi, không dính cache cũ.
 let logoVersion = '1';
 try {
@@ -54,7 +57,7 @@ const links = [
       {links.map((link) => (
         <button
           type="button"
-          class:list={['nav-link', { active: link.category === 'all' }]}
+          class:list={['nav-link', { active: link.category === initialCategory }]}
           title={link.label}
           data-sidebar-category={link.category}
         >

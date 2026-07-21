@@ -1,0 +1,26 @@
+---
+import IndexPage from './index.astro';
+
+export function getStaticPaths() {
+  return [
+    'breakfast',
+    'dinner',
+    'drinks',
+    'snack',
+    'dalat',
+    'cook',
+    'collect',
+  ].map((category) => ({
+    params: { category },
+    props: { category },
+  }));
+}
+
+interface Props {
+  category: string;
+}
+
+const { category } = Astro.props;
+---
+
+<IndexPage initialCategory={category} />
