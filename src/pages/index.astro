@@ -16,7 +16,7 @@ const initialCategory = categoryRoutes.includes(requestedCategory as (typeof cat
 const categorySeo: Record<string, { title: string; description: string }> = {
   all: { title: "Cenix's Food Station — quán ngon đã đi", description: 'Danh sách quán ngon, món đáng thử và những địa điểm ăn uống Cenix đã trải nghiệm.' },
   breakfast: { title: 'Quán ăn sáng ngon — Cenix Food Station', description: 'Các quán ăn sáng ngon, món nên gọi và địa chỉ Cenix đã thử.' },
-  dinner: { title: 'Quán ăn tối ngon — Cenix Food Station', description: 'Gợi ý quán ăn tối ngon, từ cơm nhà đến địa điểm hẹn hò cuối tuần.' },
+  dinner: { title: 'Quán ăn trưa, tối ngon — Cenix Food Station', description: 'Gợi ý quán ăn trưa, ăn tối ngon, từ cơm nhà đến địa điểm hẹn hò cuối tuần.' },
   drinks: { title: 'Quán ăn nhậu ngon — Cenix Food Station', description: 'Danh sách quán ăn nhậu, món ngon và địa điểm dễ rủ bạn bè.' },
   snack: { title: 'Quán ăn vặt ngon — Cenix Food Station', description: 'Các món ăn vặt vui miệng và địa điểm Cenix thấy đáng ghé.' },
   dalat: { title: 'Quán ngon Đà Lạt Cenix đã thử', description: 'Quán local Đà Lạt, món nên gọi, giá tham khảo và địa chỉ trên Google Maps.' },
@@ -93,7 +93,7 @@ const introLogoSrc = `/images/intro-optimized/cenix-food-logo.png?v=${introLogoV
 /* ── Modal data prep ─────────────────────────────────────────── */
 const categoryMeta: Record<string, { label: string; icon: string; bg: string; color: string }> = {
   breakfast: { label: 'Ăn sáng',   icon: '☀',  bg: 'rgba(255,217,61,.18)',  color: '#b58900' },
-  dinner:    { label: 'Ăn tối',    icon: '🌙', bg: 'rgba(99,102,241,.14)',   color: '#4338ca' },
+  dinner:    { label: 'Ăn trưa, tối', icon: '🌙', bg: 'rgba(99,102,241,.14)',   color: '#4338ca' },
   drinks:    { label: 'Ăn nhậu',   icon: '♨',  bg: 'rgba(255,77,141,.13)',  color: '#e83a78' },
   snack:     { label: 'Ăn vặt',    icon: '✦',  bg: 'rgba(167,139,250,.16)', color: '#7c3aed' },
   dalat:     { label: 'Đà Lạt',    icon: '🌿', bg: 'rgba(77,212,172,.18)',  color: '#1ba87e' },
@@ -1440,8 +1440,8 @@ const restaurantsWithContent = await Promise.all(
       lines: ['Tui hay ăn nhất', 'Quán Đà Lạt', 'Quán đại trà'],
     },
     dinner: {
-      kicker: 'Ăn tối',
-      title: 'Quán ăn tối',
+      kicker: 'Ăn trưa, tối',
+      title: 'Quán ăn trưa, tối',
       lines: ['Tui hay ăn nhất', 'Quán Đà Lạt', 'Quán đại trà'],
     },
     drinks: {
