@@ -20,7 +20,7 @@ const categorySeo: Record<string, { title: string; description: string }> = {
   drinks: { title: 'Quán ăn nhậu ngon — Cenix Food Station', description: 'Danh sách quán ăn nhậu, món ngon và địa điểm dễ rủ bạn bè.' },
   snack: { title: 'Quán ăn vặt ngon — Cenix Food Station', description: 'Các món ăn vặt vui miệng và địa điểm Cenix thấy đáng ghé.' },
   dalat: { title: 'Quán ngon Đà Lạt Cenix đã thử', description: 'Quán local Đà Lạt, món nên gọi, giá tham khảo và địa chỉ trên Google Maps.' },
-  cook: { title: 'Cenix Can Cook — món Cenix tự nấu', description: 'Công thức, món tự nấu và những câu chuyện bếp núc của Cenix.' },
+  cook: { title: 'Cà Can Cook — món Cenix tự nấu', description: 'Công thức, món tự nấu và những câu chuyện bếp núc của Cenix.' },
   collect: { title: 'Món hay và bài đáng lưu — Cenix Food Station', description: 'Những món ăn, reels và nguồn cảm hứng ẩm thực Cenix muốn lưu lại.' },
 };
 const seo = categorySeo[initialCategory] ?? categorySeo.all;
@@ -97,7 +97,7 @@ const categoryMeta: Record<string, { label: string; icon: string; bg: string; co
   drinks:    { label: 'Ăn nhậu',   icon: '♨',  bg: 'rgba(255,77,141,.13)',  color: '#e83a78' },
   snack:     { label: 'Ăn vặt',    icon: '✦',  bg: 'rgba(167,139,250,.16)', color: '#7c3aed' },
   dalat:     { label: 'Đà Lạt',    icon: '🌿', bg: 'rgba(77,212,172,.18)',  color: '#1ba87e' },
-  cook:      { label: 'Cenix Can Cook', icon: '👨‍🍳', bg: 'rgba(255,150,50,.14)',  color: '#c05c00' },
+  cook:      { label: 'Cà Can Cook', icon: '👨‍🍳', bg: 'rgba(255,150,50,.14)',  color: '#c05c00' },
   collect:   { label: 'Sưu tầm',   icon: '🔖', bg: 'rgba(100,100,200,.12)', color: '#4040aa' },
 };
 
@@ -1460,7 +1460,7 @@ const restaurantsWithContent = await Promise.all(
       lines: ['Quán tui hay ăn', 'Các quán local Đà Lạt'],
     },
     cook: {
-      kicker: 'Cenix Can Cook',
+      kicker: 'Cà Can Cook',
       title: 'Đồ ăn tui nấu',
       lines: ['Đồ tui nấu', 'Reels bếp núc'],
     },

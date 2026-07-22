@@ -54,7 +54,7 @@ const heroPages = [
   },
   {
     id: 'cook',
-    title: 'Cenix Can Cook',
+    title: 'Cà Can Cook',
     subtitle: 'Đồ tui nấu và reels bếp núc gom riêng một chỗ.',
     image: '/images/characters-optimized/cenix-cooking.png',
   },
@@ -87,11 +87,6 @@ const defaultSrcset = defaultHero.id === 'all'
       <p class="hero-subtitle" data-hero-subtitle>
         {defaultHero.subtitle}
       </p>
-
-      <div class="hero-search">
-        <label class="filter-label" for="food-search">Tìm quán hoặc món</label>
-        <input id="food-search" class="food-search-input" type="search" placeholder="Ví dụ: bánh căn, cơm tấm…" autocomplete="off" data-food-search />
-      </div>
 
       <div class="hero-location">
         <span class="filter-label">Location</span>
