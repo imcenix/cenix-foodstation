@@ -14,5 +14,7 @@ signature_dishes:
   - Hủ tiếu cá
   - Mì gà xé
 tagline: Mì gia gốc Hoa lâu đời, sợi mì dai nước dùng đậm — sáng sớm đã kín chỗ.
+price_range: 75-100k
+rating: 4.5
 ---
 Tiệm mì gốc Hoa truyền nhiều đời, nổi tiếng với hủ tiếu cá phi lê và mì gà xé. Sợi mì dai, nước dùng ngọt xương đậm đà. Có cả chi nhánh Quận 1 (Ký Con) lẫn Quận 7 (Phú Mỹ Hưng) nên tiện đường nào ghé đường đó.
