@@ -8,20 +8,23 @@ interface Props {
   description?: string;
   activeNav?: 'home' | 'all' | 'about';
   initialCategory?: string;
+  socialImage?: string;
+  socialImageAlt?: string;
+  jsonLd?: Record<string, unknown> | Record<string, unknown>[];
 }
-
 const {
   title,
   description = "Cenix's Food Station — bộ sưu tập các quán ăn ngon đã đi qua.",
   activeNav = 'home',
   initialCategory = 'all',
+  socialImage = '/images/cenix-food-station-og.png',
+  socialImageAlt = "Cenix's Food Station",
+  jsonLd,
 } = Astro.props;
-
 const site = Astro.site ?? new URL('https://yum.imcenix.com');
 const canonicalUrl = new URL(Astro.url.pathname, site).toString();
-const socialImage = new URL('/images/cenix-food-station-og.png', site).toString();
+const absoluteSocialImage = new URL(socialImage, site).toString();
 ---
-
 <!DOCTYPE html>
 <html lang="vi">
   <head>
@@ -30,57 +33,31 @@ const socialImage = new URL('/images/cenix-food-station-og.png', site).toString(
     <title>{title}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonicalUrl} />
-
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="Cenix's Food Station" />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonicalUrl} />
-    <meta property="og:image" content={socialImage} />
-    <meta property="og:image:secure_url" content={socialImage} />
+    <meta property="og:image" content={absoluteSocialImage} />
+    <meta property="og:image:secure_url" content={absoluteSocialImage} />
     <meta property="og:image:type" content="image/png" />
-    <meta property="og:image:width" content="1200" />
-    <meta property="og:image:height" content="630" />
-    <meta property="og:image:alt" content="Cenix's Food Station" />
-
+    <meta property="og:image:alt" content={socialImageAlt} />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
-    <meta name="twitter:image" content={socialImage} />
-
-    <!-- Favicon -->
+    <meta name="twitter:image" content={absoluteSocialImage} />
+    {jsonLd && <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />}
     <link rel="icon" type="image/png" href="/images/favicon-180.png" />
     <link rel="apple-touch-icon" href="/images/favicon-180.png" />
-    <link
-      rel="preload"
-      as="image"
-      href="/images/characters-optimized/cenix-kham-pha.png"
-      imagesrcset="/images/characters-optimized/cenix-kham-pha-sm.png 280w, /images/characters-optimized/cenix-kham-pha.png 720w"
-      imagesizes="(max-width: 760px) 38vw, 34vw"
-      fetchpriority="high"
-    />
-
+    <link rel="preload" as="image" href="/images/characters-optimized/cenix-kham-pha.png" imagesrcset="/images/characters-optimized/cenix-kham-pha-sm.png 280w, /images/characters-optimized/cenix-kham-pha.png 720w" imagesizes="(max-width: 760px) 38vw, 34vw" fetchpriority="high" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Baloo+2:wght@700;800&display=swap"
-      rel="stylesheet"
-      media="print"
-      onload="this.media='all'"
-    />
-    <noscript>
-      <link
-        href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Baloo+2:wght@700;800&display=swap"
-        rel="stylesheet"
-      />
-    </noscript>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Baloo+2:wght@700;800&display=swap" rel="stylesheet" media="print" onload="this.media='all'" />
+    <noscript><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Baloo+2:wght@700;800&display=swap" rel="stylesheet" /></noscript>
   </head>
   <body data-page={activeNav} data-category={initialCategory} id="top">
     <script is:inline src="/analytics.js" defer></script>
     <Nav activeNav={activeNav} initialCategory={initialCategory} />
-    <main class="app-main">
-      <slot />
-      <Footer />
-    </main>
+    <main class="app-main"><slot /><Footer /></main>
   </body>
 </html>

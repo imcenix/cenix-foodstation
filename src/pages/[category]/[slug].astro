@@ -1,0 +1,65 @@
+---
+import { getCollection, render } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+export async function getStaticPaths() {
+  const entries = (await getCollection('restaurants')).filter((entry) => !entry.id.startsWith('_template'));
+  return entries.map((entry) => {
+    const category = entry.data.category ?? (entry.data.type === 'cook' ? 'cook' : entry.data.type === 'collect' ? 'collect' : 'all');
+    return { params: { category, slug: entry.id.split('/')[0] }, props: { entry, category, folder: entry.id.split('/')[0] } };
+  });
+}
+const { entry, category, folder } = Astro.props;
+const { Content } = await render(entry);
+const d = entry.data;
+const cover = '/restaurants/' + folder + '/cover.jpg';
+const description = d.tagline || [d.cuisine, d.neighborhood, d.address].filter(Boolean).join(' · ') || 'Địa điểm ăn uống Cenix đã trải nghiệm.';
+const schema = {
+  '@context': 'https://schema.org',
+  '@type': d.type === 'restaurant' ? 'Restaurant' : 'Article',
+  name: d.name, description, image: new URL(cover, Astro.site ?? 'https://yum.imcenix.com').toString(), url: Astro.url.toString(),
+  ...(d.type === 'restaurant' ? { address: d.address, servesCuisine: d.cuisine, priceRange: d.price_range, hasMap: d.maps_url } : {}),
+};
+---
+<BaseLayout title={d.name + ' — Cenix Food Station'} description={description} initialCategory={category} socialImage={cover} socialImageAlt={d.name} jsonLd={schema}>
+  <article class="detail-page">
+    <a class="detail-back" href={'/' + category}>← Quay lại</a>
+    <div class="detail-hero"><img src={cover} alt={d.name} width="1200" height="800" fetchpriority="high" /></div>
+    <header class="detail-header">
+      <p class="detail-kicker">{d.cuisine || category}</p><h1>{d.name}</h1>
+      {d.tagline && <p class="detail-tagline">{d.tagline}</p>}
+      <div class="detail-meta">{d.rating && <span>★ {d.rating}/5</span>}{d.price_range && <span>₫ {d.price_range}</span>}{d.neighborhood && <span>📍 {d.neighborhood}</span>}</div>
+      {d.address && <p class="detail-address">{d.address}</p>}
+      <div class="detail-actions">
+        {d.maps_url && <a href={d.maps_url} target="_blank" rel="noopener">Mở Google Maps</a>}
+        <button type="button" data-share-url={Astro.url.toString()}>Chia sẻ</button>
+        <button type="button" data-save-place={folder}>♡ Lưu quán</button>
+      </div>
+    </header>
+    <div class="detail-prose"><Content /></div>
+    {d.signature_dishes.length > 0 && <section><h2>Món nên gọi</h2><div class="detail-dishes">{d.signature_dishes.map((dish) => <span>{dish}</span>)}</div></section>}
+    {d.photos.length > 0 && <section><h2>Hình ảnh</h2><div class="detail-gallery">{d.photos.map((photo) => <img src={'/restaurants/' + folder + '/' + photo} alt={d.name} loading="lazy" />)}</div></section>}
+  </article>
+  <script>
+    document.querySelector<HTMLButtonElement>('[data-share-url]')?.addEventListener('click', async (event) => {
+      const button = event.currentTarget as HTMLButtonElement;
+      const url = button.dataset.shareUrl ?? location.href;
+      if (navigator.share) await navigator.share({ title: document.title, url });
+      else { await navigator.clipboard.writeText(url); button.textContent = 'Đã copy link'; }
+    });
+    const saveButton = document.querySelector<HTMLButtonElement>('[data-save-place]');
+    if (saveButton) {
+      const key = 'cenix-food-saved';
+      const read = () => JSON.parse(localStorage.getItem(key) || '[]') as string[];
+      const refresh = () => { saveButton.textContent = read().includes(saveButton.dataset.savePlace!) ? '♥ Đã lưu' : '♡ Lưu quán'; };
+      refresh();
+      saveButton.addEventListener('click', () => {
+        const slug = saveButton.dataset.savePlace!; const saved = read();
+        localStorage.setItem(key, JSON.stringify(saved.includes(slug) ? saved.filter((x) => x !== slug) : [...saved, slug])); refresh();
+      });
+    }
+  </script>
+</BaseLayout>
+<style>
+.detail-page{max-width:980px;margin:0 auto;padding:38px 24px 80px}.detail-back{display:inline-flex;margin-bottom:20px;color:#6b7280;font-weight:700;text-decoration:none}.detail-hero{border-radius:28px;overflow:hidden;aspect-ratio:16/9;background:#eee}.detail-hero img{width:100%;height:100%;object-fit:cover}.detail-header{max-width:760px;margin:28px auto}.detail-kicker{font-weight:800;color:#f97316;text-transform:uppercase;letter-spacing:.08em}.detail-header h1{font-size:clamp(2rem,6vw,4rem);line-height:1;margin:.3em 0}.detail-tagline{font-size:1.15rem;color:#4b5563}.detail-meta,.detail-actions,.detail-dishes{display:flex;gap:10px;flex-wrap:wrap}.detail-meta span,.detail-dishes span{background:#fff3e7;border-radius:999px;padding:8px 12px;font-weight:700}.detail-address{color:#6b7280}.detail-actions a,.detail-actions button{border:0;border-radius:14px;padding:12px 16px;font-weight:800;background:#111827;color:white;text-decoration:none;cursor:pointer}.detail-prose{max-width:760px;margin:0 auto 40px;font-size:1.05rem;line-height:1.8}.detail-page section{margin-top:42px}.detail-gallery{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}.detail-gallery img{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:18px}@media(max-width:640px){.detail-page{padding:24px 16px 64px}.detail-gallery{grid-template-columns:1fr}.detail-actions>*{flex:1;text-align:center}}@media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
+</style>

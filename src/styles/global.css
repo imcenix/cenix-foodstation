@@ -1220,3 +1220,10 @@ ul, ol {
     grid-template-columns: 1fr;
   }
 }
+
+
+.rmodal-detail-link{display:flex;justify-content:center;margin-top:24px;padding:13px 18px;border-radius:14px;background:#111827;color:#fff;font-weight:800;text-decoration:none}
+:where(a,button,input,select,textarea):focus-visible{outline:3px solid #fb923c;outline-offset:3px}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
+
+.hero-search{margin-top:18px;max-width:440px}.food-search-input{width:100%;border:1px solid rgba(17,24,39,.12);border-radius:16px;background:rgba(255,255,255,.88);padding:13px 16px;font:inherit;color:#111827;box-shadow:0 8px 24px rgba(15,23,42,.06)}
