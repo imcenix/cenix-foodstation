@@ -69,12 +69,7 @@ const restaurants = defineCollection({
     cuisine:          z.string().nullable().optional(),
     rating:           z.number().min(1).max(5).optional(),
     price_range:      z.string().nullable().optional(),
-    visited:          z.union([z.string(), z.date()])
-                       .optional()
-                       .transform((v) =>
-                         !v ? undefined :
-                         typeof v === 'string' ? v : v.toISOString().slice(0, 7)
-                       ),
+    parking_car:      z.boolean().default(false),
     signature_dishes: z.array(z.string()).default([]),
 
     // ── Ảnh phụ ─────────────────────────────────────────────────

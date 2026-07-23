@@ -3,7 +3,6 @@ interface SortableContent {
   data: {
     order?: number | null;
     featured?: boolean;
-    visited?: string;
   };
 }
 
@@ -15,8 +14,6 @@ export function sortRestaurants<T extends SortableContent>(items: T[]): T[] {
     if (orderA !== orderB) return orderA - orderB;
     if (a.data.featured !== b.data.featured) return a.data.featured ? -1 : 1;
 
-    const visitCompare = (b.data.visited ?? '').localeCompare(a.data.visited ?? '');
-    if (visitCompare !== 0) return visitCompare;
 
     return a.id.localeCompare(b.id);
   });

@@ -101,10 +101,6 @@ const categoryMeta: Record<string, { label: string; icon: string; bg: string; co
   collect:   { label: 'Sưu tầm',   icon: '🔖', bg: 'rgba(100,100,200,.12)', color: '#4040aa' },
 };
 
-const formatVisited = (v: string) => {
-  const [year, month] = v.split('-');
-  return `Tháng ${parseInt(month, 10)}, ${year}`;
-};
 
 const restaurantsWithContent = await Promise.all(
   allEntries.map(async (r) => {
@@ -121,7 +117,6 @@ const restaurantsWithContent = await Promise.all(
       catMeta,
       stars: starRating > 0 ? '★'.repeat(starRating) + '☆'.repeat(5 - starRating) : '',
       starRating,
-      visitedLabel: r.data.visited ? formatVisited(String(r.data.visited)) : '',
     };
   })
 );
@@ -1130,7 +1125,7 @@ const restaurantsWithContent = await Promise.all(
 
   <div id="rmodal-overlay" class="rmodal-overlay" aria-modal="true" role="dialog">
 
-    {restaurantsWithContent.map(({ r, Content, folder, coverVersion, category, catMeta, starRating, visitedLabel }) => {
+    {restaurantsWithContent.map(({ r, Content, folder, coverVersion, category, catMeta, starRating }) => {
       const d = r.data;
       const type         = d.type ?? 'restaurant';
       const isRestaurant = type === 'restaurant';
@@ -1165,9 +1160,9 @@ const restaurantsWithContent = await Promise.all(
             {isRestaurant && (
               <>
                 <div class="rmodal-meta">
-                  {visitedLabel && <span class="rmodal-meta-chip">🗓 {visitedLabel}</span>}
                   {d.address    && <span class="rmodal-meta-chip">📍 {d.address}</span>}
                   {d.neighborhood && <span class="rmodal-meta-chip">🏘 {d.neighborhood}</span>}
+                  {d.parking_car && <span class="rmodal-meta-chip">🚗 Có chỗ đậu ô tô</span>}
                   {d.maps_url && (
                     <a class="rmodal-meta-chip rmodal-meta-chip--link" href={d.maps_url} target="_blank" rel="noopener">
                       🗺 Xem bản đồ
