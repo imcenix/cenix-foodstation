@@ -4,7 +4,7 @@ name: Thiêm Huy Mì Gia
 slug: thiem-huy-mi-gia
 category: dinner
 explore_featured: false
-favorite: false
+favorite: true
 order: 52
 neighborhood: Quận 5
 address: 455 Nguyễn Trãi, P. 7, Quận 5
@@ -14,5 +14,11 @@ signature_dishes:
   - Mì vịt tiềm
   - Gà ác tiềm
 tagline: Mì vịt tiềm gốc Hoa 3 thế hệ ở Quận 5, vịt quay giòn rồi tiềm.
+rating: 4
+price_range: 150k
+photos:
+  - photos/img_6485.jpeg
+  - photos/img_6486.jpeg
+  - photos/img_6619.jpeg
 ---
-Tiệm mì vịt tiềm gốc Hoa truyền ba thế hệ ở Quận 5. Nước dùng ninh xương và thuốc bắc ngọt thanh, vịt quay giòn trước khi tiềm nên mềm béo, sợi mì dai vàng ươm.
+Tiệm mì vịt tiềm gốc Hoa truyền ba thế hệ ở Quận 5. Quán này nổi tiếng là mì vịt tiềm, nhưng cá nhân tui thì món tủ ở đây là mì khô đùi gà chiên + 1 chén nước vịt tiềm. Hết bài.
