@@ -4,7 +4,7 @@ name: Bò Né Thanh Tuyền
 slug: bo-ne-thanh-tuyen
 category: breakfast
 explore_featured: false
-favorite: false
+favorite: true
 order: 33
 neighborhood: Quận 4
 address: 20/6-7 Nguyễn Trường Tộ, Xóm Chiếu, Quận 4
