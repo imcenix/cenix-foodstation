@@ -13,5 +13,9 @@ cuisine: Bún bò Huế
 signature_dishes:
   - Bún bò Huế đặc biệt
 tagline: Bún bò Huế trứ danh giữa lòng Phú Mỹ Hưng, đậm chất xứ Huế.
+rating: 4
+price_range: 75-110k
 ---
-Một trong những quán bún bò Huế nổi tiếng nhất nhì Quận 7, nằm ngay trung tâm Phú Mỹ Hưng. Nước lèo đậm vị Huế, chả cua, giò heo đầy đủ.
+Một trong những quán bún bò Huế nổi tiếng nhất Quận 7, nằm ngay trung tâm Phú Mỹ Hưng.
+
+Đúng gu bún bò của dân miền Trung như tui, đậm đà, không bị ngọt lợ, ngon từ thịt ngọt từ xương. Chuẩn bài.
