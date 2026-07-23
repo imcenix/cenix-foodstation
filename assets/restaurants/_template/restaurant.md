@@ -38,8 +38,8 @@ rating: 4
 # Khoảng giá / người: "50k-150k", "Under 100k", "200k-500k"...
 price_range: "100k-200k"
 
-# Lần ghé gần nhất (YYYY-MM)
-visited: "2026-04"
+# Có chỗ đậu ô tô
+parking_car: false
 
 # Món signature đáng thử
 signature_dishes:
