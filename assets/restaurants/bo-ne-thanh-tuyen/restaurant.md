@@ -14,5 +14,7 @@ signature_dishes:
   - Bò né ốp la
   - Bánh mì chảo
 tagline: Chảo bò né xèo xèo nóng hổi, bữa sáng chắc bụng kiểu Xóm Chiếu.
+rating: 4
+price_range: 60-90k
 ---
 Quán bò né quen thuộc khu Xóm Chiếu. Chảo gang nóng, bò mềm, trứng ốp la, pa-tê, xúc xích đầy đủ, bẻ bánh mì chấm là no tới trưa.
