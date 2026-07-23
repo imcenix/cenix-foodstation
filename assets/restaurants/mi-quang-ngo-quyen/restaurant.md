@@ -3,7 +3,7 @@ type: restaurant
 name: Mì Quảng Ngô Quyền
 slug: mi-quang-ngo-quyen
 category: dalat
-explore_featured: false
+explore_featured: true
 favorite: true
 order: 10
 neighborhood: Đà Lạt
