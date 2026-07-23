@@ -14,5 +14,9 @@ signature_dishes:
   - Hủ tiếu khô
   - Xí quách
 tagline: Hủ tiếu khô kèm tô xí quách gặm đã đời, giá sinh viên.
+photos:
+  - photos/img_8011.jpeg
+rating: 4
+price_range: 50-65k
 ---
 Quán hủ tiếu trong hẻm 232 Đoàn Văn Bơ. Đặc sản là hủ tiếu khô trộn đậm đà kèm chén xí quách (xương) hầm mềm để gặm, giá rẻ, hợp túi tiền.
