@@ -3,8 +3,8 @@ type: restaurant
 name: Bún bò Vỹ Dạ
 slug: bun-bo-vy-da
 category: breakfast
-explore_featured: false
-favorite: false
+explore_featured: true
+favorite: true
 order: 32
 neighborhood: Quận 7
 address: 2 Lê Văn Thiêm, Phú Mỹ Hưng, P. Tân Phong, Quận 7
