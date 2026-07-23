@@ -4,7 +4,7 @@ name: Hủ Tiếu Mì Hoà Ký
 slug: hu-tieu-mi-hoa-ky
 category: breakfast
 explore_featured: false
-favorite: false
+favorite: true
 order: 34
 neighborhood: Quận 4
 address: 36 Lô O, Khánh Hội, Quận 4
