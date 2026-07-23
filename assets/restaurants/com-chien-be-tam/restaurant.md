@@ -15,6 +15,12 @@ signature_dishes:
 tagline: Cơm chiên nóng hổi khu Nguyễn Công Trứ, hạt cơm tơi thơm.
 rating: 5
 price_range: 60-85k
+photos:
+  - photos/img_1112.jpeg
+  - photos/img_1172.jpeg
+  - photos/img_7127.jpeg
+  - photos/img_7134.jpeg
+  - photos/img_7337-2.jpeg
 ---
 Quán cơm chiên lề đường khu Nguyễn Công Trứ, Bến Thành. Buổi tối lúc nào cũng đông, sau 6h30 mới bán nên đi làm về sớm không ăn được :)) Đặc biệt là không chơi với Grab/ShopeeFood nên chỉ có tự ra ăn thôi.
 
