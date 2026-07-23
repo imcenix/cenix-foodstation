@@ -9,10 +9,8 @@ order: 70
 neighborhood: Quận 3
 address: 98B Lý Thái Tổ, P. 2, Quận 3
 maps_url: "https://maps.google.com/?q=7+Kho+98B+Ly+Thai+To+Quan+3"
-cuisine: Quán nhậu - Khô nướng
-signature_dishes:
-  - Khô mực nướng
-  - Đồ khô các loại
+cuisine: Quán nhậu
+signature_dishes: []
 tagline: Quán nhậu bình dân Lý Thái Tổ, chuyên đồ khô nướng nhâm nhi.
 rating: 5
 price_range: 60-120k
