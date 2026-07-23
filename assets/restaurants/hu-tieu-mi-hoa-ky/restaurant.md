@@ -3,7 +3,7 @@ type: restaurant
 name: Hủ Tiếu Mì Hoà Ký
 slug: hu-tieu-mi-hoa-ky
 category: breakfast
-explore_featured: false
+explore_featured: true
 favorite: true
 order: 34
 neighborhood: Quận 4
