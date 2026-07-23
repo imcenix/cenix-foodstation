@@ -3,7 +3,7 @@ type: restaurant
 name: Tiềm Thắng
 slug: tiem-thang
 category: dalat
-explore_featured: false
+explore_featured: true
 favorite: true
 order: 17
 neighborhood: Đà Lạt
