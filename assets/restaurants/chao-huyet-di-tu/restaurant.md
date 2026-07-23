@@ -4,7 +4,7 @@ name: Cháo Huyết Dì Tư
 slug: chao-huyet-di-tu
 category: breakfast
 explore_featured: false
-favorite: false
+favorite: true
 order: 37
 neighborhood: Quận 4
 address: T2A Nguyễn Hữu Hào, Khánh Hội, Quận 4
