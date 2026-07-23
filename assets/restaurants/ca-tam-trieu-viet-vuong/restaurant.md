@@ -19,7 +19,7 @@ photos:
   - photos/491957809_690608900148463_987292663900473015_n.jpg
   - photos/499489625_709666874909332_578725306333031134_n.jpg
 price_range: 85-150k
-rating: 3.5
+rating: 3
 ---
 Nhà hàng chuyên cá tầm. Lẩu cá tầm măng chua nóng hổi giữa trời lạnh. Nói chung đi gia đình, có trẻ em, thì quán này ok, không phải đặc sản gì của ĐL hết.
 
