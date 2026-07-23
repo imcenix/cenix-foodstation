@@ -13,5 +13,13 @@ cuisine: Hủ tiếu mì
 signature_dishes:
   - Hủ tiếu mì
 tagline: Tiệm hủ tiếu mì gốc Hoa quen thuộc của dân Khánh Hội.
+price_range: 50-65k
+rating: 4
+photos:
+  - photos/img_2769.jpg
+  - photos/img_7292.jpg
+  - photos/img_8274.jpeg
+  - photos/img_8276.png
+  - photos/img_8904.jpeg
 ---
 Tiệm hủ tiếu mì gốc Hoa lâu năm khu Khánh Hội. Sợi mì dai, nước dùng trong ngọt, giá bình dân — điểm ăn sáng ruột của dân địa phương.
