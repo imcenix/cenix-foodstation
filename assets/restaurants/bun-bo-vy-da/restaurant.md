@@ -15,6 +15,8 @@ signature_dishes:
 tagline: Bún bò Huế trứ danh giữa lòng Phú Mỹ Hưng, đậm chất xứ Huế.
 rating: 4
 price_range: 75-110k
+photos:
+  - photos/bun-bo-vy-da-xua-982365.jpg
 ---
 Một trong những quán bún bò Huế nổi tiếng nhất Quận 7, nằm ngay trung tâm Phú Mỹ Hưng.
 
