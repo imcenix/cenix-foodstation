@@ -4,7 +4,7 @@ name: Mì Hà Ký
 slug: mi-ha-ky
 category: breakfast
 explore_featured: false
-favorite: false
+favorite: true
 order: 30
 neighborhood: Quận 1
 address: "Q1: 69 Ký Con, P. Nguyễn Thái Bình · Q7: 404 Phạm Thái Bường, Phú Mỹ Hưng"
