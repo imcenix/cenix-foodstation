@@ -15,5 +15,8 @@ signature_dishes:
 tagline: Tô cháo huyết nóng thêm quẩy giòn, ấm bụng buổi sáng.
 rating: 4
 price_range: 20-25k
+photos:
+  - photos/img_0619.jpeg
+  - photos/img_7101.jpg
 ---
 Xe cháo huyết dì Tư khu Nguyễn Hữu Hào. Cháo mềm, huyết ngọt, thêm cây quẩy giòn nhúng vào là bữa sáng bình dân đúng điệu.
