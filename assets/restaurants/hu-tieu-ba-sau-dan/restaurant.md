@@ -3,7 +3,7 @@ type: restaurant
 name: Hủ tiếu Bà Sáu Dần
 slug: hu-tieu-ba-sau-dan
 category: dalat
-explore_featured: false
+explore_featured: true
 favorite: true
 order: 2
 neighborhood: Đà Lạt
