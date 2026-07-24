@@ -3,14 +3,19 @@ type: restaurant
 name: Cơm Tấm Chay TuTe
 slug: com-tam-chay-tute
 category: dinner
-explore_featured: false
-favorite: false
+explore_featured: true
+favorite: true
 order: 50
-neighborhood: ""
-maps_url: "https://maps.google.com/?q=Com+tam+chay+TuTe"
+neighborhood:
+maps_url:
 cuisine: Chay
 signature_dishes:
   - Cơm tấm sườn chay
 tagline: Cơm tấm phiên bản chay, sườn chay ướp đậm mà thanh.
+rating: 5
+address: Kỳ Đồng - Đặt qua Grab
+price_range: 50k
+photos:
+  - photos/img_6425.jpeg
 ---
 Quán cơm tấm chay TuTe — cơm tấm quen thuộc chuyển sang phiên bản chay: sườn chay ướp đậm đà, chả, bì chay, chan nước mắm chay chua ngọt. Ăn thanh mà vẫn đã.
