@@ -13,5 +13,20 @@ cuisine: Lẩu bò Triều Châu
 signature_dishes:
   - Lẩu bò tươi Triều Châu
 tagline: Lẩu bò Triều Châu bò tươi nhúng nước trong, siêu đông khách.
+photos:
+  - photos/img_2712.jpeg
+  - photos/img_2718.jpeg
+  - photos/img_2720.jpeg
+  - photos/img_7963.jpeg
+  - photos/img_7964.jpeg
+  - photos/img_9377.jpeg
+  - photos/img_9378.jpeg
+  - photos/img_9379.jpeg
+  - photos/img_9380.jpeg
+  - photos/img_9382.jpeg
 ---
-Chuỗi lẩu bò Triều Châu bò tươi (Wang He Niu / 旺和牛). Nước lẩu trong thanh, bò tươi thái mỏng nhúng vừa chín tới, chấm sa tế Triều Châu. Có cả cơ sở Quận 1 lẫn Quận 7.
+Chuỗi lẩu bò Triều Châu bò tươi (Wang He Niu / 旺和牛). Bò tươi vừa mổ là đưa đến dùng liền, cực kỳ tươi. Đây là địa điểm bò ngon nhất nhì Saigon.
+
+Nước lẩu trong thanh, bò tươi thái mỏng nhúng vừa chín tới, chấm sa tế Triều Châu, Haidilao chỉ còn là cái tên...
+
+Có cả cơ sở Quận 1 lẫn Quận 7, tuy nhiên bên Q7 thì thoáng hơn, cảm giác ngồi lề đường, không gian hongkong, nghe nhạc TVB, ăn lẩu uống bia, má ơi...
