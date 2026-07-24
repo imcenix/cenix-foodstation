@@ -28,16 +28,30 @@ const seo = categorySeo[initialCategory] ?? categorySeo.all;
 const allEntries = (await getCollection('restaurants'))
   .filter((r) => !r.id.startsWith('_template'));
 
-/* Sort: order field (nhỏ trước), null xuống cuối, rồi theo tên folder */
-allEntries.sort((a, b) => {
-  const oa = a.data.order ?? Infinity;
-  const ob = b.data.order ?? Infinity;
-  if (oa !== ob) return oa - ob;
-  return a.id.localeCompare(b.id);
-});
+/* Listing: bài mới nhất lên trước. CMS tăng `order` theo thứ tự đăng bài. */
+const sortNewestFirst = <T extends (typeof allEntries)[number]>(items: T[]) =>
+  [...items].sort((a, b) => {
+    const oa = a.data.order ?? Number.NEGATIVE_INFINITY;
+    const ob = b.data.order ?? Number.NEGATIVE_INFINITY;
+    if (oa !== ob) return ob - oa;
+    return b.id.localeCompare(a.id);
+  });
+
+/* “Tui hay ăn nhất”: ưu tiên số sao, đồng hạng thì bài mới hơn lên trước. */
+const sortFavorites = <T extends (typeof allEntries)[number]>(items: T[]) =>
+  [...items].sort((a, b) => {
+    const ratingDiff = (b.data.rating ?? 0) - (a.data.rating ?? 0);
+    if (ratingDiff !== 0) return ratingDiff;
+    const oa = a.data.order ?? Number.NEGATIVE_INFINITY;
+    const ob = b.data.order ?? Number.NEGATIVE_INFINITY;
+    if (oa !== ob) return ob - oa;
+    return b.id.localeCompare(a.id);
+  });
+
+const newestEntries = sortNewestFirst(allEntries);
 
 /* Backward compat alias */
-const restaurants = allEntries;
+const restaurants = newestEntries;
 
 const folderSlug = (id: string) => id.split('/')[0];
 
@@ -1030,7 +1044,7 @@ const restaurantsWithContent = await Promise.all(
             {contentRows.map((row) => {
               /* Pre-filter cards for this row's permanent filter */
               const rowCards = (() => {
-                if (row.filter === 'explore_featured') return restaurants.filter(r => r.data.explore_featured);
+                if (row.filter === 'explore_featured') return sortFavorites(restaurants.filter(r => r.data.explore_featured));
                 if (row.filter === 'dalat')            return restaurants.filter(r => getCategory(r) === 'dalat');
                 if (row.filter === 'cook')             return restaurants.filter(r => r.data.type === 'cook');
                 return restaurants;
@@ -1083,7 +1097,7 @@ const restaurantsWithContent = await Promise.all(
                 </div>
               </div>
               <div class="content-row-track" data-fav-track>
-                {restaurants.filter((r) => r.data.favorite).map((r) => (
+                {sortFavorites(restaurants.filter((r) => r.data.favorite)).map((r) => (
                   <RestaurantCard restaurant={r} folder={folderSlug(r.id)} mealTags={getMealTags(r)} />
                 ))}
               </div>
