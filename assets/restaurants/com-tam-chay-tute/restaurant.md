@@ -5,6 +5,7 @@ slug: com-tam-chay-tute
 category: dinner
 explore_featured: true
 favorite: true
+featured_priority: 1
 order: 50
 neighborhood:
 maps_url:

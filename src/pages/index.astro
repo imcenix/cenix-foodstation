@@ -40,6 +40,9 @@ const sortNewestFirst = <T extends (typeof allEntries)[number]>(items: T[]) =>
 /* “Tui hay ăn nhất”: ưu tiên số sao, đồng hạng thì bài mới hơn lên trước. */
 const sortFavorites = <T extends (typeof allEntries)[number]>(items: T[]) =>
   [...items].sort((a, b) => {
+    const priorityA = a.data.featured_priority ?? Number.POSITIVE_INFINITY;
+    const priorityB = b.data.featured_priority ?? Number.POSITIVE_INFINITY;
+    if (priorityA !== priorityB) return priorityA - priorityB;
     const ratingDiff = (b.data.rating ?? 0) - (a.data.rating ?? 0);
     if (ratingDiff !== 0) return ratingDiff;
     const oa = a.data.order ?? Number.NEGATIVE_INFINITY;
@@ -77,7 +80,7 @@ const getCategory = (r: (typeof allEntries)[number]) => {
 
 /* Tags dùng cho filter JS: 'all' + category */
 const getMealTags = (r: (typeof allEntries)[number]) =>
-  ['all', getCategory(r)].join(' ');
+  ['all', getCategory(r), ...(r.data.additional_categories ?? [])].join(' ');
 
 const neighborhoods = Array.from(
   new Set(allEntries.map((r) => r.data.neighborhood).filter(Boolean))
