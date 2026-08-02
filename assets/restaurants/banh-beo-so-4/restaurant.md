@@ -14,6 +14,7 @@ photos:
   - photos/img_4625.jpeg
   - photos/img_4626.jpeg
   - photos/img_9051.jpeg
+tagline: Đây là một quán bánh bèo nổi tiếng tại Đà Lạt. Ăn từ ngày còn bán sạp nhỏ trong chợ số 4, đến sau này đổi tới đổi lui lòng vòng khu số 4, đến khi nổi tiếng thì không đổi chỗ nữa.
 ---
 Đây là một quán bánh bèo nổi tiếng tại Đà Lạt. Ăn từ ngày còn bán sạp nhỏ trong chợ số 4, đến sau này đổi tới đổi lui lòng vòng khu số 4, đến khi nổi tiếng thì không đổi chỗ nữa.
 
