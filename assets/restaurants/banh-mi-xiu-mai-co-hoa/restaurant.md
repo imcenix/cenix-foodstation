@@ -1,6 +1,6 @@
 ---
 type: restaurant
-name: Bánh mì xíu mại Cô Hoa
+name: Xíu mại Cô Hoa
 slug: banh-mi-xiu-mai-co-hoa
 category: dalat
 explore_featured: false
