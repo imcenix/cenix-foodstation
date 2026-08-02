@@ -787,7 +787,7 @@ ul, ol {
   display: flex;
   flex: 1;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 0;
   padding: 1rem;
 }
 
@@ -795,9 +795,12 @@ ul, ol {
   display: flex;
   align-items: center;
   gap: 0.32rem;
-  color: var(--color-muted);
+  margin-top: auto;
+  padding-top: 0.8rem;
+  border-top: 1px solid var(--line);
+  color: var(--color-mint-dark);
   font-size: var(--fs-xs);
-  font-weight: 600;
+  font-weight: 700;
   line-height: 1.3;
 }
 
@@ -817,7 +820,6 @@ ul, ol {
   font-size: 1.12rem;
   font-weight: 800;
   line-height: 1.18;
-  min-height: 2.36em;
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
@@ -825,6 +827,8 @@ ul, ol {
 }
 
 .r-card-tagline {
+  margin-top: 0.38rem;
+  margin-bottom: 0.8rem;
   color: var(--color-ink-soft);
   font-size: var(--fs-sm);
   line-height: 1.45;
@@ -832,7 +836,6 @@ ul, ol {
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
-  min-height: 4.35em;
 }
 
 .r-card-cta {
