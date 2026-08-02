@@ -778,11 +778,6 @@ ul, ol {
   color: #fff;
 }
 
-.r-card-badge--cook {
-  background: rgba(255, 150, 50, 0.90);
-  color: #fff;
-}
-
 .r-card-body {
   display: flex;
   flex: 1;

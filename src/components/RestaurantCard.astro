@@ -15,7 +15,6 @@ const fallbackCoverUrl = `/restaurants/${folder}/cover.jpg?v=${coverVersion}`;
 
 const type        = data.type ?? 'restaurant';
 const isRestaurant = type === 'restaurant';
-const isCook       = type === 'cook';
 const isCollect    = type === 'collect';
 
 const formatLocation = (value?: string) => {
@@ -55,11 +54,6 @@ const shortLocation = formatLocation(data.neighborhood);
     {/* Collect badge */}
     {isCollect && (
       <span class="r-card-badge r-card-badge--collect" aria-hidden="true">🔖</span>
-    )}
-
-    {/* Cook badge */}
-    {isCook && (
-      <span class="r-card-badge r-card-badge--cook" aria-hidden="true">👨‍🍳</span>
     )}
   </div>
 
