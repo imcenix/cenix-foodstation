@@ -796,8 +796,16 @@ ul, ol {
   align-items: center;
   gap: 0.32rem;
   margin-top: auto;
-  padding-top: 0.8rem;
-  border-top: 1px solid var(--line);
+  padding-top: calc(0.8rem + 3px);
+  border-top: 0;
+  background-image: repeating-linear-gradient(
+    135deg,
+    rgba(23, 33, 61, 0.16) 0 4px,
+    rgba(23, 33, 61, 0.035) 4px 8px
+  );
+  background-repeat: no-repeat;
+  background-position: top left;
+  background-size: 100% 3px;
   color: var(--color-mint-dark);
   font-size: var(--fs-xs);
   font-weight: 700;
