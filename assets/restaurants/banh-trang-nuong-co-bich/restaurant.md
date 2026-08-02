@@ -1,6 +1,6 @@
 ---
 type: restaurant
-name: Bánh tráng nướng Cô Bích
+name: Bánh tráng Cô Bích
 slug: banh-trang-nuong-co-bich
 category: dalat
 explore_featured: false
