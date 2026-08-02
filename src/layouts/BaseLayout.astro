@@ -10,6 +10,8 @@ interface Props {
   initialCategory?: string;
   socialImage?: string;
   socialImageAlt?: string;
+  socialImageWidth?: number;
+  socialImageHeight?: number;
   jsonLd?: Record<string, unknown> | Record<string, unknown>[];
 }
 const {
@@ -17,14 +19,19 @@ const {
   description = "Cenix's Food Station — bộ sưu tập các quán ăn ngon đã đi qua.",
   activeNav = 'home',
   initialCategory = 'all',
-  socialImage = '/images/cenix-thumbnaill.png?v=20260802',
+  socialImage = '/images/cenix-thumbnaill.png?v=20260802-2',
   socialImageAlt = "Cenix's Food Station",
+  socialImageWidth,
+  socialImageHeight,
   jsonLd,
 } = Astro.props;
 const site = Astro.site ?? new URL('https://yum.imcenix.com');
 const canonicalUrl = new URL(Astro.url.pathname, site).toString();
 const absoluteSocialImage = new URL(socialImage, site).toString();
 const socialImageType = /\.png(?:$|\?)/i.test(socialImage) ? 'image/png' : 'image/jpeg';
+const isDefaultSocialImage = socialImage.includes('/images/cenix-thumbnaill.png');
+const resolvedSocialImageWidth = socialImageWidth ?? (isDefaultSocialImage ? 902 : undefined);
+const resolvedSocialImageHeight = socialImageHeight ?? (isDefaultSocialImage ? 686 : undefined);
 ---
 <!DOCTYPE html>
 <html lang="vi">
@@ -40,13 +47,17 @@ const socialImageType = /\.png(?:$|\?)/i.test(socialImage) ? 'image/png' : 'imag
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonicalUrl} />
     <meta property="og:image" content={absoluteSocialImage} />
+    <meta property="og:image:url" content={absoluteSocialImage} />
     <meta property="og:image:secure_url" content={absoluteSocialImage} />
     <meta property="og:image:type" content={socialImageType} />
+    {resolvedSocialImageWidth && <meta property="og:image:width" content={String(resolvedSocialImageWidth)} />}
+    {resolvedSocialImageHeight && <meta property="og:image:height" content={String(resolvedSocialImageHeight)} />}
     <meta property="og:image:alt" content={socialImageAlt} />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={absoluteSocialImage} />
+    <meta name="twitter:image:alt" content={socialImageAlt} />
     {jsonLd && <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />}
     <link rel="icon" type="image/png" href="/images/favicon-180.png" />
     <link rel="apple-touch-icon" href="/images/favicon-180.png" />
