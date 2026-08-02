@@ -1,6 +1,6 @@
 ---
 type: restaurant
-name: Cơm Gà Hải Nam Trung Sơn
+name: Cơm Gà Trung Sơn
 slug: com-ga-hai-nam-trung-son
 category: dinner
 explore_featured: true

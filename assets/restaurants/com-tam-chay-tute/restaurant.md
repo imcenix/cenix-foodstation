@@ -7,7 +7,7 @@ explore_featured: true
 favorite: true
 featured_priority: 1
 order: 50
-neighborhood:
+neighborhood: Grab Food
 maps_url:
 cuisine: Chay
 signature_dishes:
