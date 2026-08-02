@@ -15,6 +15,7 @@ rating: 5
 price_range: 65k-300k
 visited: 2023-05
 slug: quan-hy-map
+tagline: Đồ ăn nấu ngon và được bài trí rất bắt mắt như lẩu bò hay bò nước than (bàn ủi than).
 ---
 Một chiếc quán với đồ ăn rất ngon, phù hợp cho những buổi tối trời se lạnh ở Đà Lạt.
 
