@@ -18,7 +18,7 @@ const schema = {
   '@context': 'https://schema.org',
   '@type': d.type === 'restaurant' ? 'Restaurant' : 'Article',
   name: d.name, description, image: new URL(cover, Astro.site ?? 'https://yum.imcenix.com').toString(), url: Astro.url.toString(),
-  ...(d.type === 'restaurant' ? { address: d.address, servesCuisine: d.cuisine, priceRange: d.price_range, hasMap: d.maps_url } : {}),
+  ...(d.type === 'restaurant' ? { address: d.address, servesCuisine: d.cuisine, hasMap: d.maps_url } : {}),
 };
 ---
 <BaseLayout title={d.name + ' — Cenix Food Station'} description={description} initialCategory={category} socialImage={cover} socialImageAlt={d.name} jsonLd={schema}>
@@ -28,7 +28,7 @@ const schema = {
     <header class="detail-header">
       <p class="detail-kicker">{d.cuisine || category}</p><h1>{d.name}</h1>
       {d.tagline && <p class="detail-tagline">{d.tagline}</p>}
-      <div class="detail-meta">{d.rating && <span>★ {d.rating}/5</span>}{d.price_range && <span>₫ {d.price_range}</span>}{d.neighborhood && <span>📍 {d.neighborhood}</span>}{d.parking_car && <span>🚗 Có chỗ đậu ô tô</span>}</div>
+      <div class="detail-meta">{d.rating && <span>★ {d.rating}/5</span>}{d.neighborhood && <span>📍 {d.neighborhood}</span>}{d.parking_car && <span>🚗 Có chỗ đậu ô tô</span>}</div>
       {d.address && <p class="detail-address">{d.address}</p>}
       <div class="detail-actions">
         {d.maps_url && <a href={d.maps_url} target="_blank" rel="noopener">Mở Google Maps</a>}

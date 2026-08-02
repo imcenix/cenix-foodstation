@@ -18,12 +18,16 @@ const isRestaurant = type === 'restaurant';
 const isCook       = type === 'cook';
 const isCollect    = type === 'collect';
 
-const starRating = (isRestaurant && data.rating)
-  ? Math.max(1, Math.min(5, Math.round(data.rating)))
-  : 0;
-const stars = starRating > 0
-  ? '★'.repeat(starRating) + '☆'.repeat(5 - starRating)
-  : '';
+const formatLocation = (value?: string) => {
+  if (!value) return '';
+  const location = value.trim();
+  if (/da\s*lat|đà\s*lạt/i.test(location)) return 'Đà Lạt';
+  const district = location.match(/(?:quận|q\.?)[\s-]*(\d+)/i);
+  if (district) return `Quận ${district[1]}`;
+  if (/bình\s*chánh/i.test(location)) return 'Bình Chánh';
+  return location;
+};
+const shortLocation = formatLocation(data.neighborhood);
 ---
 
 <button
@@ -48,13 +52,6 @@ const stars = starRating > 0
       onerror={`this.onerror=null;this.src='${fallbackCoverUrl}'`}
     />
 
-    {/* Stars — restaurant only */}
-    {isRestaurant && starRating > 0 && (
-      <span class="r-card-rating">
-        <span class="r-card-rating-star" aria-label={`${starRating} trên 5 sao`}>{stars}</span>
-      </span>
-    )}
-
     {/* Collect badge */}
     {isCollect && (
       <span class="r-card-badge r-card-badge--collect" aria-hidden="true">🔖</span>
@@ -67,32 +64,21 @@ const stars = starRating > 0
   </div>
 
   <div class="r-card-body">
+    <h3 class="r-card-title">{data.name}</h3>
 
-    {/* Cuisine · Neighborhood — restaurant only */}
-    {isRestaurant && (data.cuisine || data.neighborhood) && (
+    {/* A single short location is easier to scan than cuisine + location. */}
+    {isRestaurant && shortLocation && (
       <span class="r-card-meta">
-        {data.cuisine && <span>{data.cuisine}</span>}
-        {data.cuisine && data.neighborhood && (
-          <span class="r-card-meta-dot" aria-hidden="true"></span>
-        )}
-        {data.neighborhood && <span>{data.neighborhood}</span>}
+        <svg class="r-card-location-icon" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M20 10c0 5-8 12-8 12S4 15 4 10a8 8 0 1 1 16 0Z"></path>
+          <circle cx="12" cy="10" r="2.5"></circle>
+        </svg>
+        <span>{shortLocation}</span>
       </span>
     )}
 
-    <h3 class="r-card-title">{data.name}</h3>
-
     {data.tagline && (
       <p class="r-card-tagline">{data.tagline}</p>
-    )}
-
-    {/* Footer: price only (restaurant), hidden for cook/collect */}
-    {isRestaurant && data.price_range && (
-      <div class="r-card-foot">
-        <span class="r-card-price">
-          <span aria-hidden="true">₫</span>
-          {data.price_range}
-        </span>
-      </div>
     )}
 
   </div>

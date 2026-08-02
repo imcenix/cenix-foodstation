@@ -79,6 +79,16 @@ const contentRows = [
   { id: 'row-3', title: 'Đồ ăn tui nấu',         filter: 'cook'            },
 ];
 
+// Editorial order for the Explore featured row only.
+const exploreFeaturedPriority = ['morning-in-town', 'com-tam-chay-tute'];
+const sortExploreFeatured = (entries: typeof restaurants) => [...entries].sort((a, b) => {
+  const aPriority = exploreFeaturedPriority.indexOf(folderSlug(a.id));
+  const bPriority = exploreFeaturedPriority.indexOf(folderSlug(b.id));
+  const aRank = aPriority === -1 ? Infinity : aPriority;
+  const bRank = bPriority === -1 ? Infinity : bPriority;
+  return aRank - bRank;
+});
+
 const transparentPixel = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==';
 
 // Cache-bust logo intro theo mtime
@@ -753,7 +763,7 @@ const restaurantsWithContent = await Promise.all(
   color: var(--color-pink);
 }
 
-/* ── Score row (stars + price) ──────────────────────────────── */
+/* ── Score row (detail modal only) ──────────────────────────── */
 .rmodal-score {
   display: flex; align-items: center; gap: 16px;
   margin-bottom: 18px;
@@ -764,15 +774,6 @@ const restaurantsWithContent = await Promise.all(
 }
 .rmodal-stars-filled { color: var(--color-butter); }
 .rmodal-stars-empty  { color: rgba(23,33,61,.18); }
-.rmodal-price {
-  display: inline-flex; align-items: center; gap: 5px;
-  padding: 5px 14px;
-  background: rgba(77,212,172,.14);
-  border-radius: var(--radius-pill);
-  font-size: .82rem; font-weight: 700;
-  color: var(--color-mint-dark);
-}
-
 /* ── Meal tag chips ─────────────────────────────────────────── */
 .rmodal-tags {
   display: flex; flex-wrap: wrap; gap: 7px;
@@ -933,10 +934,10 @@ const restaurantsWithContent = await Promise.all(
     <div class="ov-grid"            aria-hidden="true"></div>
 
     <!-- ── Z2: Food items BEHIND glass (blurred through glass) ── -->
-    <div class="ov-food ov-food--bg ov-food--bg1" aria-hidden="true" data-px="0.07"><picture><source media="(min-width: 761px)" srcset="/images/intro-optimized/foods-intro/03.png" /><img src={transparentPixel} alt="" width="300" height="200" loading="lazy" decoding="async" /></picture></div>
-    <div class="ov-food ov-food--bg ov-food--bg2" aria-hidden="true" data-px="0.06"><picture><source media="(min-width: 761px)" srcset="/images/intro-optimized/foods-intro/06.png" /><img src={transparentPixel} alt="" width="300" height="300" loading="lazy" decoding="async" /></picture></div>
-    <div class="ov-food ov-food--bg ov-food--bg3" aria-hidden="true" data-px="0.05"><picture><source media="(min-width: 761px)" srcset="/images/intro-optimized/foods-intro/07.png" /><img src={transparentPixel} alt="" width="300" height="300" loading="lazy" decoding="async" /></picture></div>
-    <div class="ov-food ov-food--bg ov-food--bg4" aria-hidden="true" data-px="0.08"><picture><source media="(min-width: 761px)" srcset="/images/intro-optimized/foods-intro/04.png" /><img src={transparentPixel} alt="" width="300" height="300" loading="lazy" decoding="async" /></picture></div>
+    <div class="ov-food ov-food--bg ov-food--bg1" aria-hidden="true" data-px="0.07"><picture><source media="(min-width: 761px)" data-intro-srcset="/images/intro-optimized/foods-intro/03.png" /><img src={transparentPixel} alt="" width="300" height="200" loading="lazy" decoding="async" /></picture></div>
+    <div class="ov-food ov-food--bg ov-food--bg2" aria-hidden="true" data-px="0.06"><picture><source media="(min-width: 761px)" data-intro-srcset="/images/intro-optimized/foods-intro/06.png" /><img src={transparentPixel} alt="" width="300" height="300" loading="lazy" decoding="async" /></picture></div>
+    <div class="ov-food ov-food--bg ov-food--bg3" aria-hidden="true" data-px="0.05"><picture><source media="(min-width: 761px)" data-intro-srcset="/images/intro-optimized/foods-intro/07.png" /><img src={transparentPixel} alt="" width="300" height="300" loading="lazy" decoding="async" /></picture></div>
+    <div class="ov-food ov-food--bg ov-food--bg4" aria-hidden="true" data-px="0.08"><picture><source media="(min-width: 761px)" data-intro-srcset="/images/intro-optimized/foods-intro/04.png" /><img src={transparentPixel} alt="" width="300" height="300" loading="lazy" decoding="async" /></picture></div>
 
     <!-- ── Z4: Frosted glass panel ── -->
     <div class="ov-glass">
@@ -984,15 +985,15 @@ const restaurantsWithContent = await Promise.all(
     </div>
 
     <!-- ── Z7: Chat bubble PNGs (floating around man) ── -->
-    <picture><source media="(min-width: 761px)" srcset="/images/intro-optimized/bubble-chat/1.png" /><img class="ov-chat-img ov-chat-img--1" src={transparentPixel} alt="" width="360" height="240" loading="lazy" decoding="async" aria-hidden="true" data-px="0.055" /></picture>
-    <picture><source media="(min-width: 761px)" srcset="/images/intro-optimized/bubble-chat/2.png" /><img class="ov-chat-img ov-chat-img--2" src={transparentPixel} alt="" width="360" height="240" loading="lazy" decoding="async" aria-hidden="true" data-px="0.045" /></picture>
-    <picture><source media="(min-width: 761px)" srcset="/images/intro-optimized/bubble-chat/3.png" /><img class="ov-chat-img ov-chat-img--3" src={transparentPixel} alt="" width="360" height="240" loading="lazy" decoding="async" aria-hidden="true" data-px="0.05" /></picture>
-    <picture><source media="(min-width: 761px)" srcset="/images/intro-optimized/bubble-chat/4.png" /><img class="ov-chat-img ov-chat-img--4" src={transparentPixel} alt="" width="360" height="240" loading="lazy" decoding="async" aria-hidden="true" data-px="0.06" /></picture>
+    <picture><source media="(min-width: 761px)" data-intro-srcset="/images/intro-optimized/bubble-chat/1.png" /><img class="ov-chat-img ov-chat-img--1" src={transparentPixel} alt="" width="360" height="240" loading="lazy" decoding="async" aria-hidden="true" data-px="0.055" /></picture>
+    <picture><source media="(min-width: 761px)" data-intro-srcset="/images/intro-optimized/bubble-chat/2.png" /><img class="ov-chat-img ov-chat-img--2" src={transparentPixel} alt="" width="360" height="240" loading="lazy" decoding="async" aria-hidden="true" data-px="0.045" /></picture>
+    <picture><source media="(min-width: 761px)" data-intro-srcset="/images/intro-optimized/bubble-chat/3.png" /><img class="ov-chat-img ov-chat-img--3" src={transparentPixel} alt="" width="360" height="240" loading="lazy" decoding="async" aria-hidden="true" data-px="0.05" /></picture>
+    <picture><source media="(min-width: 761px)" data-intro-srcset="/images/intro-optimized/bubble-chat/4.png" /><img class="ov-chat-img ov-chat-img--4" src={transparentPixel} alt="" width="360" height="240" loading="lazy" decoding="async" aria-hidden="true" data-px="0.06" /></picture>
 
     <!-- ── Z8: Food items IN FRONT of glass (sharp, floating) ── -->
-    <div class="ov-food ov-food--fg ov-food--fg1" aria-hidden="true" data-px="0.07"><picture><source media="(min-width: 761px)" srcset="/images/intro-optimized/foods-intro/02.png" /><img src={transparentPixel} alt="" width="300" height="300" loading="lazy" decoding="async" /></picture></div>
-    <div class="ov-food ov-food--fg ov-food--fg2" aria-hidden="true" data-px="0.06"><picture><source media="(min-width: 761px)" srcset="/images/intro-optimized/foods-intro/01.png" /><img src={transparentPixel} alt="" width="300" height="200" loading="lazy" decoding="async" /></picture></div>
-    <div class="ov-food ov-food--fg ov-food--fg4" aria-hidden="true" data-px="0.05"><picture><source media="(min-width: 761px)" srcset="/images/intro-optimized/foods-intro/08.png" /><img src={transparentPixel} alt="" width="300" height="200" loading="lazy" decoding="async" /></picture></div>
+    <div class="ov-food ov-food--fg ov-food--fg1" aria-hidden="true" data-px="0.07"><picture><source media="(min-width: 761px)" data-intro-srcset="/images/intro-optimized/foods-intro/02.png" /><img src={transparentPixel} alt="" width="300" height="300" loading="lazy" decoding="async" /></picture></div>
+    <div class="ov-food ov-food--fg ov-food--fg2" aria-hidden="true" data-px="0.06"><picture><source media="(min-width: 761px)" data-intro-srcset="/images/intro-optimized/foods-intro/01.png" /><img src={transparentPixel} alt="" width="300" height="200" loading="lazy" decoding="async" /></picture></div>
+    <div class="ov-food ov-food--fg ov-food--fg4" aria-hidden="true" data-px="0.05"><picture><source media="(min-width: 761px)" data-intro-srcset="/images/intro-optimized/foods-intro/08.png" /><img src={transparentPixel} alt="" width="300" height="200" loading="lazy" decoding="async" /></picture></div>
 
     <!-- ── Z10: Scroll cue ── -->
     <button
@@ -1030,7 +1031,7 @@ const restaurantsWithContent = await Promise.all(
             {contentRows.map((row) => {
               /* Pre-filter cards for this row's permanent filter */
               const rowCards = (() => {
-                if (row.filter === 'explore_featured') return restaurants.filter(r => r.data.explore_featured);
+                if (row.filter === 'explore_featured') return sortExploreFeatured(restaurants.filter(r => r.data.explore_featured));
                 if (row.filter === 'dalat')            return restaurants.filter(r => getCategory(r) === 'dalat');
                 if (row.filter === 'cook')             return restaurants.filter(r => r.data.type === 'cook');
                 return restaurants;
@@ -1176,7 +1177,6 @@ const restaurantsWithContent = await Promise.all(
                       <span class="rmodal-stars-empty">{emptyStars}</span>
                     </span>
                   )}
-                  {d.price_range && <span class="rmodal-price">₫ {d.price_range}</span>}
                 </div>
                 {d.signature_dishes.length > 0 && (
                   <div class="rmodal-dishes">
@@ -1262,6 +1262,41 @@ const restaurantsWithContent = await Promise.all(
     if (window.innerWidth <= 760) {
       ov.style.display = 'none';
       return;
+    }
+
+    // The intro is a welcome, not a navigation tax. Replaying it on every
+    // homepage visit also forces the browser to decode all decorative PNGs.
+    const introSessionKey = 'cenix-food-intro-seen-v1';
+    try {
+      if (sessionStorage.getItem(introSessionKey)) {
+        ov.style.display = 'none';
+        return;
+      }
+      sessionStorage.setItem(introSessionKey, '1');
+    } catch { /* Storage can be unavailable in private/restricted contexts. */ }
+
+    // Keep the critical path to the logo + character. Decorative food and chat
+    // layers start only after the page load, and stay off on data-saver/slow links.
+    const connection = (navigator as Navigator & {
+      connection?: { saveData?: boolean; effectiveType?: string };
+    }).connection;
+    const slowConnection = connection?.saveData || ['slow-2g', '2g'].includes(connection?.effectiveType ?? '');
+    if (!slowConnection) {
+      const loadDecor = () => {
+        ov.querySelectorAll<HTMLSourceElement>('source[data-intro-srcset]').forEach((source) => {
+          source.srcset = source.dataset.introSrcset ?? '';
+          source.removeAttribute('data-intro-srcset');
+        });
+      };
+      const scheduleDecor = () => {
+        if ('requestIdleCallback' in window) {
+          window.requestIdleCallback(loadDecor, { timeout: 700 });
+        } else {
+          window.setTimeout(loadDecor, 120);
+        }
+      };
+      if (document.readyState === 'complete') scheduleDecor();
+      else window.addEventListener('load', scheduleDecor, { once: true });
     }
 
     /* Lock body scroll */
