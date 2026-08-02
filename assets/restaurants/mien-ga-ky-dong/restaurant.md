@@ -14,5 +14,8 @@ signature_dishes:
   - Miến gà
   - Phở gà
 tagline: Miến gà Kỳ Đồng được Michelin Bib Gourmand, kín bàn tới khuya.
+photos:
+  - photos/pho-mien-ga-ky-dong-2-1720015821.jpg
+  - photos/photo-11-16877532270611488983631.jpg
 ---
 Tiệm phở miến gà trong hẻm Kỳ Đồng, được Michelin Guide vinh danh Bib Gourmand. Gà dai ngọt, nước dùng trong thanh, miến mềm — kín bàn từ sáng tới khuya.
