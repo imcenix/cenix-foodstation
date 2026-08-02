@@ -5,9 +5,9 @@ name: Kaxun Cua
 slug: mi-cua-kajun
 order: 2
 explore_featured: true
-favorite: false
+favorite: true
 neighborhood: Quận 6
-address:  356G Lê Quang Sung P6 - Q6.
+address: 356G Lê Quang Sung P6 - Q6.
 maps_url: "https://maps.app.goo.gl/example"
 cuisine: Món Âu
 rating: 4

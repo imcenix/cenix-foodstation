@@ -18,5 +18,7 @@ photos:
   - photos/hoa-thong-bbq-bistro-tgroup-travel-2.jpg
   - photos/hoa-thong-bbq-bistro-tgroup-travel-7.jpg
   - photos/suon-nuong-hoa-thong-brewin.jpg
+rating: 2
+price_range: 70-150
 ---
 Quán nằm khu Ngã 5 Đại học — thủ phủ ăn uống của sinh viên Đà Lạt. Đồ nướng ngon, giá hợp lý, đặc biệt có đồ uống thủ công tự ủ mang đậm chất nông sản Đà Lạt.

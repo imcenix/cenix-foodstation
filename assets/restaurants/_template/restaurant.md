@@ -15,6 +15,7 @@ slug: "ten-quan"
 
 # Category — chọn 1 trong: breakfast | dinner | drinks | snack | dalat
 category: breakfast
+additional_categories: []
 
 # ── Thứ tự hiển thị ──────────────────────────────────────────
 # Số nhỏ hơn lên trước (1, 2, 3...). Bỏ comment để bật.
@@ -25,6 +26,9 @@ category: breakfast
 explore_featured: false
 # Tick true để xuất hiện mục "Tôi hay ăn nhất" trong tab category
 favorite: false
+
+# Vi tri featured: 1 = dau tien; de trong = tu xep
+featured_priority:
 
 # ── Thông tin quán ────────────────────────────────────────────
 neighborhood: "Quận 1"

@@ -51,12 +51,16 @@ const restaurants = defineCollection({
     // Với type=restaurant, chọn 1 trong: breakfast | dinner | drinks | snack | dalat
     category: z.enum(['breakfast', 'dinner', 'drinks', 'snack', 'dalat', 'cook', 'collect'])
                .optional(),
+    // Mot bai co the xuat hien them o tab khac ma van giu category chinh.
+    additional_categories: z.array(z.enum(['breakfast', 'dinner', 'drinks', 'snack', 'dalat'])).default([]),
 
     // ── Featured flags ──────────────────────────────────────────
     // Xuất hiện ở row 1 "Tui hay ăn nhất" ngoài tab Khám phá
     explore_featured: z.boolean().default(false),
     // "Tôi hay ăn nhất" trong tab category của bài
     favorite:         z.boolean().default(false),
+    // So nho hon dung truoc trong hang featured; de trong = tu xep.
+    featured_priority: z.number().int().positive().nullable().optional(),
 
     // ── Thứ tự hiển thị ─────────────────────────────────────────
     // Số nhỏ hơn lên trước (1, 2, 3...). Để trống = xếp sau cùng.

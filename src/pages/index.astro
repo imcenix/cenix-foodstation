@@ -16,7 +16,7 @@ const initialCategory = categoryRoutes.includes(requestedCategory as (typeof cat
 const categorySeo: Record<string, { title: string; description: string }> = {
   all: { title: "Cenix's Food Station — quán ngon đã đi", description: 'Danh sách quán ngon, món đáng thử và những địa điểm ăn uống Cenix đã trải nghiệm.' },
   breakfast: { title: 'Quán ăn sáng ngon — Cenix Food Station', description: 'Các quán ăn sáng ngon, món nên gọi và địa chỉ Cenix đã thử.' },
-  dinner: { title: 'Quán ăn tối ngon — Cenix Food Station', description: 'Gợi ý quán ăn tối ngon, từ cơm nhà đến địa điểm hẹn hò cuối tuần.' },
+  dinner: { title: 'Quán ăn trưa, tối ngon — Cenix Food Station', description: 'Gợi ý quán ăn trưa, ăn tối ngon, từ cơm nhà đến địa điểm hẹn hò cuối tuần.' },
   drinks: { title: 'Quán ăn nhậu ngon — Cenix Food Station', description: 'Danh sách quán ăn nhậu, món ngon và địa điểm dễ rủ bạn bè.' },
   snack: { title: 'Quán ăn vặt ngon — Cenix Food Station', description: 'Các món ăn vặt vui miệng và địa điểm Cenix thấy đáng ghé.' },
   dalat: { title: 'Quán ngon Đà Lạt Cenix đã thử', description: 'Quán local Đà Lạt, món nên gọi, giá tham khảo và địa chỉ trên Google Maps.' },
@@ -28,16 +28,33 @@ const seo = categorySeo[initialCategory] ?? categorySeo.all;
 const allEntries = (await getCollection('restaurants'))
   .filter((r) => !r.id.startsWith('_template'));
 
-/* Sort: order field (nhỏ trước), null xuống cuối, rồi theo tên folder */
-allEntries.sort((a, b) => {
-  const oa = a.data.order ?? Infinity;
-  const ob = b.data.order ?? Infinity;
-  if (oa !== ob) return oa - ob;
-  return a.id.localeCompare(b.id);
-});
+/* Listing: bài mới nhất lên trước. CMS tăng `order` theo thứ tự đăng bài. */
+const sortNewestFirst = <T extends (typeof allEntries)[number]>(items: T[]) =>
+  [...items].sort((a, b) => {
+    const oa = a.data.order ?? Number.NEGATIVE_INFINITY;
+    const ob = b.data.order ?? Number.NEGATIVE_INFINITY;
+    if (oa !== ob) return ob - oa;
+    return b.id.localeCompare(a.id);
+  });
+
+/* “Tui hay ăn nhất”: ưu tiên số sao, đồng hạng thì bài mới hơn lên trước. */
+const sortFavorites = <T extends (typeof allEntries)[number]>(items: T[]) =>
+  [...items].sort((a, b) => {
+    const priorityA = a.data.featured_priority ?? Number.POSITIVE_INFINITY;
+    const priorityB = b.data.featured_priority ?? Number.POSITIVE_INFINITY;
+    if (priorityA !== priorityB) return priorityA - priorityB;
+    const ratingDiff = (b.data.rating ?? 0) - (a.data.rating ?? 0);
+    if (ratingDiff !== 0) return ratingDiff;
+    const oa = a.data.order ?? Number.NEGATIVE_INFINITY;
+    const ob = b.data.order ?? Number.NEGATIVE_INFINITY;
+    if (oa !== ob) return ob - oa;
+    return b.id.localeCompare(a.id);
+  });
+
+const newestEntries = sortNewestFirst(allEntries);
 
 /* Backward compat alias */
-const restaurants = allEntries;
+const restaurants = newestEntries;
 
 const folderSlug = (id: string) => id.split('/')[0];
 
@@ -63,7 +80,7 @@ const getCategory = (r: (typeof allEntries)[number]) => {
 
 /* Tags dùng cho filter JS: 'all' + category */
 const getMealTags = (r: (typeof allEntries)[number]) =>
-  ['all', getCategory(r)].join(' ');
+  ['all', getCategory(r), ...(r.data.additional_categories ?? [])].join(' ');
 
 const neighborhoods = Array.from(
   new Set(allEntries.map((r) => r.data.neighborhood).filter(Boolean))
@@ -81,7 +98,7 @@ const contentRows = [
 
 // Editorial order for the Explore featured row only.
 const exploreFeaturedPriority = ['morning-in-town', 'com-tam-chay-tute'];
-const sortExploreFeatured = (entries: typeof restaurants) => [...entries].sort((a, b) => {
+const sortExploreFeatured = (entries: typeof restaurants) => sortFavorites(entries).sort((a, b) => {
   const aPriority = exploreFeaturedPriority.indexOf(folderSlug(a.id));
   const bPriority = exploreFeaturedPriority.indexOf(folderSlug(b.id));
   const aRank = aPriority === -1 ? Infinity : aPriority;
@@ -103,7 +120,7 @@ const introLogoSrc = `/images/intro-optimized/cenix-food-logo.png?v=${introLogoV
 /* ── Modal data prep ─────────────────────────────────────────── */
 const categoryMeta: Record<string, { label: string; icon: string; bg: string; color: string }> = {
   breakfast: { label: 'Ăn sáng',   icon: '☀',  bg: 'rgba(255,217,61,.18)',  color: '#b58900' },
-  dinner:    { label: 'Ăn tối',    icon: '🌙', bg: 'rgba(99,102,241,.14)',   color: '#4338ca' },
+  dinner:    { label: 'Ăn trưa, tối', icon: '🌙', bg: 'rgba(99,102,241,.14)',   color: '#4338ca' },
   drinks:    { label: 'Ăn nhậu',   icon: '♨',  bg: 'rgba(255,77,141,.13)',  color: '#e83a78' },
   snack:     { label: 'Ăn vặt',    icon: '✦',  bg: 'rgba(167,139,250,.16)', color: '#7c3aed' },
   dalat:     { label: 'Đà Lạt',    icon: '🌿', bg: 'rgba(77,212,172,.18)',  color: '#1ba87e' },
@@ -1084,7 +1101,7 @@ const restaurantsWithContent = await Promise.all(
                 </div>
               </div>
               <div class="content-row-track" data-fav-track>
-                {restaurants.filter((r) => r.data.favorite).map((r) => (
+                {sortFavorites(restaurants.filter((r) => r.data.favorite)).map((r) => (
                   <RestaurantCard restaurant={r} folder={folderSlug(r.id)} mealTags={getMealTags(r)} />
                 ))}
               </div>
@@ -1470,8 +1487,8 @@ const restaurantsWithContent = await Promise.all(
       lines: ['Tui hay ăn nhất', 'Quán Đà Lạt', 'Quán đại trà'],
     },
     dinner: {
-      kicker: 'Ăn tối',
-      title: 'Quán ăn tối',
+      kicker: 'Ăn trưa, tối',
+      title: 'Quán ăn trưa, tối',
       lines: ['Tui hay ăn nhất', 'Quán Đà Lạt', 'Quán đại trà'],
     },
     drinks: {

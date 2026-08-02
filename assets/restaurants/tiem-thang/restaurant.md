@@ -3,13 +3,13 @@ type: restaurant
 name: Tiềm Thắng
 slug: tiem-thang
 category: dalat
-explore_featured: false
+explore_featured: true
 favorite: true
 order: 17
 neighborhood: Đà Lạt
 address: 237 Hai Bà Trưng, Đà Lạt
 maps_url: "https://maps.google.com/?q=Thang+tiem+thuoc+bac+237+Hai+Ba+Trung+Da+Lat"
-cuisine: Tiềm thuốc bắc & nướng
+cuisine: Tiềm
 signature_dishes:
   - Gà tiềm thuốc bắc
   - Món nướng

@@ -1,0 +1,16 @@
+---
+type: restaurant
+name: The Street
+slug: the-street
+category: drinks
+explore_featured: false
+favorite: false
+order: 78
+neighborhood: ""
+maps_url: "https://maps.google.com/?q=The+Street+quan+nhau"
+cuisine: Quán nhậu - Bia
+signature_dishes:
+  - Món nhậu
+tagline: Không gian bia - nhậu trẻ trung, hợp tụ tập cuối tuần.
+---
+The Street — quán bia/nhậu không gian trẻ trung, nhạc xập xình, menu đồ nhậu đa dạng. Chỗ tụ tập bạn bè cuối tuần.
