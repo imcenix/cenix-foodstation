@@ -17,13 +17,14 @@ const {
   description = "Cenix's Food Station — bộ sưu tập các quán ăn ngon đã đi qua.",
   activeNav = 'home',
   initialCategory = 'all',
-  socialImage = '/images/cenix-food-station-og.png',
+  socialImage = '/images/cenix-thumbnaill.png',
   socialImageAlt = "Cenix's Food Station",
   jsonLd,
 } = Astro.props;
 const site = Astro.site ?? new URL('https://yum.imcenix.com');
 const canonicalUrl = new URL(Astro.url.pathname, site).toString();
 const absoluteSocialImage = new URL(socialImage, site).toString();
+const socialImageType = /\.png(?:$|\?)/i.test(socialImage) ? 'image/png' : 'image/jpeg';
 ---
 <!DOCTYPE html>
 <html lang="vi">
@@ -40,7 +41,7 @@ const absoluteSocialImage = new URL(socialImage, site).toString();
     <meta property="og:url" content={canonicalUrl} />
     <meta property="og:image" content={absoluteSocialImage} />
     <meta property="og:image:secure_url" content={absoluteSocialImage} />
-    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:type" content={socialImageType} />
     <meta property="og:image:alt" content={socialImageAlt} />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={title} />
