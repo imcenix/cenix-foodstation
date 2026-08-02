@@ -8,6 +8,9 @@ category: dalat
 rating: 5
 price_range: 35-40k
 tagline: Quán cháo cá ngày xưa trong chợ Cẩm Đô, từ những năm 9x, nay dời qua hẻm Hai Bà Trưng.
+neighborhood: Đà Lạt
+address: Hẻm 115 Đường Hai Bà Trưng, Cam Ly - Đà Lạt
+maps_url: "https://maps.app.goo.gl/2N7HhcY3AQxGDv4e8"
 ---
 Cháo cá Cẩm Đô, ăn từ khi còn bán trong chợ cũ, nay dời qua hẻm bên Hai Bà Trưng
 
