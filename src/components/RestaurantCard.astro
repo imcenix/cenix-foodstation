@@ -34,6 +34,7 @@ const shortLocation = formatLocation(data.neighborhood);
 >
   <div class="r-card-media">
     <img
+      class="r-card-cover"
       src={coverUrl}
       alt={data.name}
       width="540"
@@ -41,6 +42,14 @@ const shortLocation = formatLocation(data.neighborhood);
       loading="lazy"
       decoding="async"
       onerror={`this.onerror=null;this.src='${fallbackCoverUrl}'`}
+    />
+    <img
+      class="r-card-watermark"
+      src="/images/yum-imcenix-watermark.png"
+      alt=""
+      aria-hidden="true"
+      loading="lazy"
+      decoding="async"
     />
 
     {/* Collect badge */}
