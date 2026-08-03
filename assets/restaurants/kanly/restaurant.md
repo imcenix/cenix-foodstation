@@ -6,7 +6,7 @@ category: drinks
 explore_featured: false
 favorite: false
 order: 71
-neighborhood: Quận 7
+neighborhood: Nhà Bè
 address: Khu Saigon South (Phú Mỹ Hưng), Quận 7
 maps_url: "https://maps.google.com/?q=Kanly+Saigon+South+Quan+7"
 cuisine: Quán nhậu
