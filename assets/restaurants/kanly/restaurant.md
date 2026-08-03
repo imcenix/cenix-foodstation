@@ -4,7 +4,7 @@ name: Kanly
 slug: kanly
 category: drinks
 explore_featured: false
-favorite: false
+favorite: true
 order: 71
 neighborhood: Nhà Bè
 address: Khu Saigon South (Phú Mỹ Hưng), Quận 7
