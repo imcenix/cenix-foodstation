@@ -5,6 +5,7 @@ import Hero from '../components/Hero.astro';
 import RestaurantCard from '../components/RestaurantCard.astro';
 import { statSync } from 'node:fs';
 import { join as pathJoin } from 'node:path';
+import { formatLocation } from '../lib/location';
 
 interface Props { initialCategory?: string }
 const categoryRoutes = ['all', 'breakfast', 'dinner', 'drinks', 'snack', 'dalat', 'cook', 'collect'] as const;
@@ -83,8 +84,8 @@ const getMealTags = (r: (typeof allEntries)[number]) =>
   ['all', getCategory(r), ...(r.data.additional_categories ?? [])].join(' ');
 
 const neighborhoods = Array.from(
-  new Set(allEntries.map((r) => r.data.neighborhood).filter(Boolean))
-).sort() as string[];
+  new Set(allEntries.map((r) => formatLocation(r.data.neighborhood)).filter(Boolean))
+).sort();
 
 const cuisines = Array.from(
   new Set(allEntries.map((r) => r.data.cuisine).filter(Boolean))
@@ -1629,11 +1630,6 @@ const restaurantsWithContent = await Promise.all(
     if (window.location.pathname !== nextUrl) window.location.assign(nextUrl);
   };
 
-  document.querySelectorAll<HTMLButtonElement>('[data-sidebar-category]').forEach((item) =>
-    item.addEventListener('click', () => {
-      setCategory(item.dataset.sidebarCategory ?? 'all');
-    })
-  );
   document.querySelector<HTMLInputElement>('[data-food-search]')?.addEventListener('input', (e) => {
     state.query = (e.currentTarget as HTMLInputElement).value.trim().toLocaleLowerCase('vi');
     apply();
