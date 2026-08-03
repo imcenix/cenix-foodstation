@@ -14,5 +14,7 @@ signature_dishes:
   - Bò tơ nướng
   - Lẩu bò
 tagline: Bò tơ Tây Ninh trục Phạm Hùng, không gian 2000m² thoáng mát.
+photos:
+  - photos/thuong-thuc-bo-to-nam-sanh-voi-huong-vi-dam-da-kho-quen-1-1661830455.jpg
 ---
-Nhà hàng bò tơ Tây Ninh Năm Sánh trên trục Phạm Hùng. Bò tơ mềm ngọt nướng, nhúng lẩu, chấm mắm nêm, không gian rộng hơn 2000m² thoáng mát — hợp tiệc tùng đông người.
+Nhà hàng bò tơ Tây Ninh Năm Sánh trên trục Phạm Hùng. Bò tơ mềm ngọt nướng, nhúng lẩu, chấm mắm nêm, không gian rộng hơn 2000m² thoáng mát.
