@@ -13,5 +13,14 @@ cuisine: Quán nhậu
 signature_dishes:
   - Món nhậu
 tagline: Quán lai rai khu Lương Hữu Khánh, bình dân gần trung tâm.
+photos:
+  - photos/img_2089.jpg
+  - photos/img_2090.jpg
 ---
-Quán nhậu khu Lương Hữu Khánh, gần khu Bùi Viện - Phạm Ngũ Lão. Đồ nhậu bình dân, giá mềm, tiện tụ tập ngay trung tâm Quận 1.
+Quán nhậu khu Lương Hữu Khánh, gần khu Bùi Viện - Phạm Ngũ Lão.
+
+Đồ nhậu bình dân, giá mềm, đồ ăn nấu rất ngon.
+
+Các món có thể thử: Cơm chiên Bảy Ba, ếch souna, cá kiếm mù tạt....
+
+Đặc biệt có thể gọi 1 phần xoài từ cô (mẹ chủ quán) đối diện, xoài rất ngon.
