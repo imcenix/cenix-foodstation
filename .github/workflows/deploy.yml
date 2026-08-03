@@ -7,7 +7,9 @@ on:
 
 concurrency:
   group: foodstation-deploy
-  cancel-in-progress: true
+  # Never interrupt an SFTP mirror midway: a cancelled --delete upload can
+  # leave the live site missing static assets until the next full deploy.
+  cancel-in-progress: false
 
 jobs:
   deploy:
@@ -127,4 +129,5 @@ jobs:
               --exclude-glob .DS_Store \
               --exclude-glob '*.log' \
               dist/ '$YUM_DIR';
+            cls -l '$YUM_DIR/images/intro-optimized/cenix-food-logo-nav.png';
           "
