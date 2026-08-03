@@ -4,7 +4,7 @@ name: Quán Tú
 slug: quan-tu
 category: drinks
 explore_featured: false
-favorite: false
+favorite: true
 order: 72
 neighborhood: Quận 1
 address: 2bis Lương Hữu Khánh, Quận 1
