@@ -5,7 +5,7 @@ import Hero from '../components/Hero.astro';
 import RestaurantCard from '../components/RestaurantCard.astro';
 import { statSync } from 'node:fs';
 import { join as pathJoin } from 'node:path';
-import { formatLocation } from '../lib/location';
+import { compareLocations, formatLocation } from '../lib/location';
 
 interface Props { initialCategory?: string }
 const categoryRoutes = ['all', 'breakfast', 'dinner', 'drinks', 'snack', 'dalat', 'cook', 'collect'] as const;
@@ -84,8 +84,13 @@ const getMealTags = (r: (typeof allEntries)[number]) =>
   ['all', getCategory(r), ...(r.data.additional_categories ?? [])].join(' ');
 
 const neighborhoods = Array.from(
-  new Set(allEntries.map((r) => formatLocation(r.data.neighborhood)).filter(Boolean))
-).sort();
+  new Set(
+    allEntries
+      .filter((r) => r.data.type === 'restaurant')
+      .map((r) => formatLocation(r.data.neighborhood))
+      .filter(Boolean)
+  )
+).sort(compareLocations);
 
 const cuisines = Array.from(
   new Set(allEntries.map((r) => r.data.cuisine).filter(Boolean))
@@ -1635,7 +1640,12 @@ const restaurantsWithContent = await Promise.all(
     apply();
   });
   document.querySelector<HTMLSelectElement>('[data-location-select]')?.addEventListener('change', (e) => {
-    state.neighborhood = (e.currentTarget as HTMLSelectElement).value;
+    const location = (e.currentTarget as HTMLSelectElement).value;
+    if (location === 'Đà Lạt') {
+      setCategory('dalat');
+      return;
+    }
+    state.neighborhood = location;
     apply();
   });
 

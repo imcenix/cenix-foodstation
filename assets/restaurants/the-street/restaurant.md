@@ -6,7 +6,7 @@ category: drinks
 explore_featured: false
 favorite: false
 order: 78
-neighborhood: Saigon
+neighborhood: TP Khác
 maps_url: "https://maps.google.com/?q=The+Street+quan+nhau"
 cuisine: Quán nhậu - Bia
 signature_dishes:

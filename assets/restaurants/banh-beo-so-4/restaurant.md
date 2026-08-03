@@ -5,7 +5,7 @@ favorite: false
 name: Bánh Bèo Số 4
 slug: banh-beo-so-4
 category: dalat
-neighborhood: Dalat
+neighborhood: Đà Lạt
 cuisine: Bánh Bèo
 rating: 3
 price_range: 60k

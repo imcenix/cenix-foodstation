@@ -3,7 +3,7 @@ type: restaurant
 explore_featured: true
 favorite: true
 name: Cơm Bò Bùi Thị Xuân
-neighborhood: Q1
+neighborhood: Quận 1
 address: Đối diện trường BTX
 cuisine: VN
 rating: 5
