@@ -1,8 +1,6 @@
 // Tự sinh cover-card.jpg (ảnh thumbnail) từ cover.jpg cho mỗi quán.
 // Chạy tự động trước mỗi build (prebuild). Chỉ tạo khi cover-card:
-//   - thiếu, hoặc
-//   - bị đen/hỏng (mọi kênh màu gần 0).
-// Tránh lỗi "thumbnail đen" và khỏi phải crop tay.
+// Luôn tạo lại từ cover.jpg để thumbnail theo đúng ảnh mới nhất từ CMS.
 import { readdir, rename } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
 import { dirname, resolve, join } from 'node:path';
@@ -22,16 +20,6 @@ const ROOT = resolve(here, '..', 'assets', 'restaurants');
 const CARD_HEIGHT = 720;
 const QUALITY = 82;
 
-async function isBlackOrBad(file) {
-  try {
-    const { channels } = await sharp(file).stats();
-    const maxMean = Math.max(...channels.map((c) => c.mean));
-    return maxMean < 12; // gần như toàn đen
-  } catch {
-    return true; // đọc lỗi = coi như hỏng
-  }
-}
-
 const entries = await readdir(ROOT, { withFileTypes: true });
 let made = 0;
 for (const e of entries) {
@@ -40,8 +28,6 @@ for (const e of entries) {
   const cover = join(dir, 'cover.jpg');
   const card = join(dir, 'cover-card.jpg');
   if (!existsSync(cover)) continue;
-  const need = !existsSync(card) || (await isBlackOrBad(card));
-  if (!need) continue;
   await sharp(cover)
     .resize({ height: CARD_HEIGHT })
     .jpeg({ quality: QUALITY, mozjpeg: true })
