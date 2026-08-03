@@ -14,4 +14,4 @@ signature_dishes:
   - Món nhậu
 tagline: Chỗ lai rai khu Saigon South, không gian thoáng hợp tụ tập.
 ---
-Quán nhậu khu Saigon South (Phú Mỹ Hưng). Không gian thoáng, menu đồ nhậu đa dạng — điểm tụ tập quen của dân Quận 7 sau giờ làm.
+Quán nhậu dưới căn hộ Saigon South. Không gian thoáng, menu đồ nhậu ít nhưng chất lượng, do chủ quán "tự xử", điểm tụ tập quen của ae Nam Saigon.
