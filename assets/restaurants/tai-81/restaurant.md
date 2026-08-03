@@ -13,5 +13,9 @@ cuisine: Quán nhậu
 signature_dishes:
   - Món nhậu
 tagline: Quán 81 Ngô Thời Nhiệm mấy chục năm, chỗ tụ của dân phiêu bạt.
+photos:
+  - photos/img_4529.jpg
 ---
-Quán ăn - nhậu ở 81 Ngô Thời Nhiệm, tồn tại mấy chục năm gần như không đổi. Đồ nhậu bình dân, không gian thân quen, chỗ bạn bè ngồi lai rai kể chuyện.
+Quán bình dân, buổi trưa bán cơm trưa, tối bán quán nhậu, món ra hơi chậm do chỉ có 2 chị em chủ quán làm, nhưng đồ ăn thì lạ và ngon.
+
+Các món có thể thử: Tiết canh nghêu, gù bò cháy tỏi. Khuya khuya thì làm cái khổ qua cá thác lác.
