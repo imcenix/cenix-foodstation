@@ -14,5 +14,8 @@ signature_dishes:
   - Cà ri cua
   - Hải sản
 tagline: Hải sản khu Xóm Chiếu, đặc sản cà ri cua béo ngậy.
+photos:
+  - photos/images-1.jpg
+  - photos/vn-11134259-7r98o-lwck36ty43x57bresize_ss640x400.jpg
 ---
 Quán hải sản 63 khu Xóm Chiếu, Quận 4. Đặc sản là món cà ri cua béo ngậy, thịt cua chắc, nước cà ri sánh chấm bánh mì. Ngồi lai rai hải sản tươi rất đã.
