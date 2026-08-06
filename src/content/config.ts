@@ -68,6 +68,7 @@ const restaurants = defineCollection({
 
     // ── Chỉ dùng cho type=restaurant ───────────────────────────
     neighborhood:     z.string().nullable().optional(),
+    other_city:       z.string().nullable().optional(),
     address:          z.string().nullable().optional(),
     maps_url:         z.string().nullable().optional(),
     cuisine:          z.string().nullable().optional(),

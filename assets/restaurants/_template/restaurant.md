@@ -32,6 +32,7 @@ featured_priority:
 
 # ── Thông tin quán ────────────────────────────────────────────
 neighborhood: "Quận 1"
+# other_city: "Nha Trang" # chỉ dùng khi neighborhood là "TP Khác"
 address: "123 Đường ABC, Phường XYZ, Quận 1, TP.HCM"
 maps_url: "https://maps.google.com/?q=..."
 cuisine: "Việt"

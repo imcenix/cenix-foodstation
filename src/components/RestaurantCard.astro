@@ -1,6 +1,6 @@
 ---
 import type { CollectionEntry } from 'astro:content';
-import { formatLocation } from '../lib/location';
+import { displayLocation, formatLocation } from '../lib/location';
 
 interface Props {
   restaurant: CollectionEntry<'restaurants'>;
@@ -19,6 +19,7 @@ const isRestaurant = type === 'restaurant';
 const isCollect    = type === 'collect';
 
 const shortLocation = formatLocation(data.neighborhood);
+const visibleLocation = displayLocation(data.neighborhood, data.other_city);
 ---
 
 <button
@@ -27,7 +28,7 @@ const shortLocation = formatLocation(data.neighborhood);
   data-cuisine={data.cuisine}
   data-neighborhood={shortLocation}
   data-meal-tags={mealTags}
-  data-search={[data.name, data.tagline, data.cuisine, data.neighborhood, ...data.signature_dishes].filter(Boolean).join(' ').toLocaleLowerCase('vi')}
+  data-search={[data.name, data.tagline, data.cuisine, data.neighborhood, data.other_city, ...data.signature_dishes].filter(Boolean).join(' ').toLocaleLowerCase('vi')}
   data-favorite={data.favorite ? '1' : undefined}
   data-explore={data.explore_featured ? '1' : undefined}
   data-modal={`restaurant-${folder}`}
@@ -57,13 +58,13 @@ const shortLocation = formatLocation(data.neighborhood);
     )}
 
     {/* Location is the final supporting detail, separated from the description. */}
-    {isRestaurant && shortLocation && (
+    {isRestaurant && visibleLocation && (
       <span class="r-card-meta">
         <svg class="r-card-location-icon" viewBox="0 0 24 24" aria-hidden="true">
           <path d="M20 10c0 5-8 12-8 12S4 15 4 10a8 8 0 1 1 16 0Z"></path>
           <circle cx="12" cy="10" r="2.5"></circle>
         </svg>
-        <span>{shortLocation}</span>
+        <span>{visibleLocation}</span>
       </span>
     )}
 

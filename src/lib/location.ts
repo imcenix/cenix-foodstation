@@ -11,6 +11,12 @@ export function formatLocation(value?: string | null): string {
   return location;
 }
 
+export function displayLocation(value?: string | null, otherCity?: string | null): string {
+  const group = formatLocation(value);
+  if (group === 'TP Khác') return otherCity?.trim() || group;
+  return group;
+}
+
 export const LOCATION_ORDER = [
   ...Array.from({ length: 12 }, (_, index) => `Quận ${index + 1}`),
   'Bình Tân',

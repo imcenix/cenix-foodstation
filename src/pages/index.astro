@@ -5,7 +5,7 @@ import Hero from '../components/Hero.astro';
 import RestaurantCard from '../components/RestaurantCard.astro';
 import { statSync } from 'node:fs';
 import { join as pathJoin } from 'node:path';
-import { compareLocations, formatLocation } from '../lib/location';
+import { compareLocations, displayLocation, formatLocation } from '../lib/location';
 
 interface Props { initialCategory?: string }
 const categoryRoutes = ['all', 'breakfast', 'dinner', 'drinks', 'snack', 'dalat', 'cook', 'collect'] as const;
@@ -1151,6 +1151,7 @@ const restaurantsWithContent = await Promise.all(
 
     {restaurantsWithContent.map(({ r, Content, folder, coverVersion, category, catMeta, starRating }) => {
       const d = r.data;
+      const visibleLocation = displayLocation(d.neighborhood, d.other_city);
       const type         = d.type ?? 'restaurant';
       const isRestaurant = type === 'restaurant';
       const isCook       = type === 'cook';
@@ -1185,7 +1186,7 @@ const restaurantsWithContent = await Promise.all(
               <>
                 <div class="rmodal-meta">
                   {d.address    && <span class="rmodal-meta-chip">📍 {d.address}</span>}
-                  {d.neighborhood && <span class="rmodal-meta-chip">🏘 {d.neighborhood}</span>}
+                  {visibleLocation && <span class="rmodal-meta-chip">🏘 {visibleLocation}</span>}
                   {d.parking_car && <span class="rmodal-meta-chip">🚗 Có chỗ đậu ô tô</span>}
                   {d.maps_url && (
                     <a class="rmodal-meta-chip rmodal-meta-chip--link" href={d.maps_url} target="_blank" rel="noopener">
