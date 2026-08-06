@@ -1569,7 +1569,9 @@ const restaurantsWithContent = await Promise.all(
   const apply = () => {
     const visibleSlugs = new Set<string>();
 
-    if (state.category === 'all') {
+    const showExploreRows = state.category === 'all' && state.neighborhood === 'all' && !state.query;
+
+    if (showExploreRows) {
       /* ── Trang chủ: các hàng scroll ngang, tối đa 10 bài ── */
       if (homeView) homeView.hidden = false;
       if (catView)  catView.hidden  = true;
@@ -1594,7 +1596,7 @@ const restaurantsWithContent = await Promise.all(
         card.style.display = show ? '' : 'none';
         if (show) favVisible += 1;
       });
-      if (favSection) favSection.hidden = favVisible === 0 || state.category === 'explore_featured';
+      if (favSection) favSection.hidden = favVisible === 0 || state.category === 'explore_featured' || state.category === 'all';
 
       gridCards.forEach((card) => {
         const show = matchesCategory(card) && matchesNeighborhood(card) && matchesSearch(card);
