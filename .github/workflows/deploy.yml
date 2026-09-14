@@ -18,7 +18,9 @@ jobs:
     env:
       PROJECT_SLUG: yum
       SITE_DOMAIN: yum.imcenix.com
-      SFTP_HOST: ${{ secrets.SFTP_HOST || '45.32.110.164' }}
+      # Site da migrate sang Hestia host moi. Giu explicit de secret
+      # SFTP_HOST cu khong tro deploy ve VPS cu.
+      SFTP_HOST: '51.79.191.15'
       SFTP_PORT: ${{ secrets.SFTP_PORT || '22' }}
       SFTP_USER: ${{ secrets.SFTP_USER || 'cenix' }}
       SFTP_PASSWORD: ${{ secrets.SFTP_PASSWORD }}
