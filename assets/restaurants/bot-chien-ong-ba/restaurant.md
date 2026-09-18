@@ -5,7 +5,7 @@ favorite: true
 name: Bột Chiên Ông Ba
 slug: bot-chien-ong-ba
 category: snack
-neighborhood: Q4
+neighborhood: Quận 4
 address: 40/53A, Đ. Vĩnh Khánh Đ. Vĩnh Hội, Khánh Hội
 maps_url: "https://maps.app.goo.gl/N3GkTfVdGLt8UwNT9"
 cuisine: VN

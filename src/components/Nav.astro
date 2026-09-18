@@ -82,12 +82,16 @@ const links = [
     hamburger.classList.toggle('is-active', open);
   });
 
-  /* Close dropdown when a nav link is tapped */
+  /* Navigate on every page, including restaurant detail pages. */
   document.querySelectorAll<HTMLButtonElement>('[data-sidebar-category]').forEach((btn) => {
     btn.addEventListener('click', () => {
       panel?.classList.remove('is-open');
       hamburger?.setAttribute('aria-expanded', 'false');
       hamburger?.classList.remove('is-active');
+
+      const category = btn.dataset.sidebarCategory ?? 'all';
+      const nextUrl = category === 'all' ? '/' : `/${category}/`;
+      if (window.location.pathname !== nextUrl) window.location.assign(nextUrl);
     });
   });
 

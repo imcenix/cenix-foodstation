@@ -7,7 +7,9 @@ on:
 
 concurrency:
   group: foodstation-deploy
-  cancel-in-progress: true
+  # Never interrupt an SFTP mirror midway: a cancelled --delete upload can
+  # leave the live site missing static assets until the next full deploy.
+  cancel-in-progress: false
 
 jobs:
   deploy:
@@ -16,7 +18,9 @@ jobs:
     env:
       PROJECT_SLUG: yum
       SITE_DOMAIN: yum.imcenix.com
-      SFTP_HOST: ${{ secrets.SFTP_HOST || '45.32.110.164' }}
+      # Site da migrate sang Hestia host moi. Giu explicit de secret
+      # SFTP_HOST cu khong tro deploy ve VPS cu.
+      SFTP_HOST: '51.79.191.15'
       SFTP_PORT: ${{ secrets.SFTP_PORT || '22' }}
       SFTP_USER: ${{ secrets.SFTP_USER || 'cenix' }}
       SFTP_PASSWORD: ${{ secrets.SFTP_PASSWORD }}
@@ -127,4 +131,5 @@ jobs:
               --exclude-glob .DS_Store \
               --exclude-glob '*.log' \
               dist/ '$YUM_DIR';
+            cls -l '$YUM_DIR/images/intro-optimized/cenix-food-logo-nav.png';
           "

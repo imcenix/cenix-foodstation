@@ -5,6 +5,7 @@ import Hero from '../components/Hero.astro';
 import RestaurantCard from '../components/RestaurantCard.astro';
 import { statSync } from 'node:fs';
 import { join as pathJoin } from 'node:path';
+import { compareLocations, displayLocation, formatLocation } from '../lib/location';
 
 interface Props { initialCategory?: string }
 const categoryRoutes = ['all', 'breakfast', 'dinner', 'drinks', 'snack', 'dalat', 'cook', 'collect'] as const;
@@ -83,8 +84,13 @@ const getMealTags = (r: (typeof allEntries)[number]) =>
   ['all', getCategory(r), ...(r.data.additional_categories ?? [])].join(' ');
 
 const neighborhoods = Array.from(
-  new Set(allEntries.map((r) => r.data.neighborhood).filter(Boolean))
-).sort() as string[];
+  new Set(
+    allEntries
+      .filter((r) => r.data.type === 'restaurant')
+      .map((r) => formatLocation(r.data.neighborhood))
+      .filter(Boolean)
+  )
+).sort(compareLocations);
 
 const cuisines = Array.from(
   new Set(allEntries.map((r) => r.data.cuisine).filter(Boolean))
@@ -1145,6 +1151,7 @@ const restaurantsWithContent = await Promise.all(
 
     {restaurantsWithContent.map(({ r, Content, folder, coverVersion, category, catMeta, starRating }) => {
       const d = r.data;
+      const visibleLocation = displayLocation(d.neighborhood, d.other_city);
       const type         = d.type ?? 'restaurant';
       const isRestaurant = type === 'restaurant';
       const isCook       = type === 'cook';
@@ -1179,7 +1186,7 @@ const restaurantsWithContent = await Promise.all(
               <>
                 <div class="rmodal-meta">
                   {d.address    && <span class="rmodal-meta-chip">📍 {d.address}</span>}
-                  {d.neighborhood && <span class="rmodal-meta-chip">🏘 {d.neighborhood}</span>}
+                  {visibleLocation && <span class="rmodal-meta-chip">🏘 {visibleLocation}</span>}
                   {d.parking_car && <span class="rmodal-meta-chip">🚗 Có chỗ đậu ô tô</span>}
                   {d.maps_url && (
                     <a class="rmodal-meta-chip rmodal-meta-chip--link" href={d.maps_url} target="_blank" rel="noopener">
@@ -1562,7 +1569,9 @@ const restaurantsWithContent = await Promise.all(
   const apply = () => {
     const visibleSlugs = new Set<string>();
 
-    if (state.category === 'all') {
+    const showExploreRows = state.category === 'all' && state.neighborhood === 'all' && !state.query;
+
+    if (showExploreRows) {
       /* ── Trang chủ: các hàng scroll ngang, tối đa 10 bài ── */
       if (homeView) homeView.hidden = false;
       if (catView)  catView.hidden  = true;
@@ -1587,7 +1596,7 @@ const restaurantsWithContent = await Promise.all(
         card.style.display = show ? '' : 'none';
         if (show) favVisible += 1;
       });
-      if (favSection) favSection.hidden = favVisible === 0 || state.category === 'explore_featured';
+      if (favSection) favSection.hidden = favVisible === 0 || state.category === 'explore_featured' || state.category === 'all';
 
       gridCards.forEach((card) => {
         const show = matchesCategory(card) && matchesNeighborhood(card) && matchesSearch(card);
@@ -1629,17 +1638,17 @@ const restaurantsWithContent = await Promise.all(
     if (window.location.pathname !== nextUrl) window.location.assign(nextUrl);
   };
 
-  document.querySelectorAll<HTMLButtonElement>('[data-sidebar-category]').forEach((item) =>
-    item.addEventListener('click', () => {
-      setCategory(item.dataset.sidebarCategory ?? 'all');
-    })
-  );
   document.querySelector<HTMLInputElement>('[data-food-search]')?.addEventListener('input', (e) => {
     state.query = (e.currentTarget as HTMLInputElement).value.trim().toLocaleLowerCase('vi');
     apply();
   });
   document.querySelector<HTMLSelectElement>('[data-location-select]')?.addEventListener('change', (e) => {
-    state.neighborhood = (e.currentTarget as HTMLSelectElement).value;
+    const location = (e.currentTarget as HTMLSelectElement).value;
+    if (location === 'Đà Lạt') {
+      setCategory('dalat');
+      return;
+    }
+    state.neighborhood = location;
     apply();
   });
 
