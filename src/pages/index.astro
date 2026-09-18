@@ -93,7 +93,7 @@ const cuisines = Array.from(
 const contentRows = [
   { id: 'row-1', title: 'Tui hay ăn nhất',      filter: 'explore_featured' },
   { id: 'row-2', title: 'Quán local Đà Lạt nè',  filter: 'dalat'           },
-  { id: 'row-3', title: 'Đồ ăn tui nấu',         filter: 'cook'            },
+  { id: 'row-3', title: 'Đồ ăn nhà tui nấu',         filter: 'cook'            },
 ];
 
 // Editorial order for the Explore featured row only.
@@ -1479,7 +1479,7 @@ const restaurantsWithContent = await Promise.all(
     all: {
       kicker: 'Khám phá',
       title: 'Quán nên lưu lại',
-      lines: ['Tui hay ăn nhất', 'Quán local ở Đà Lạt nè', 'Đồ ăn tui nấu'],
+      lines: ['Tui hay ăn nhất', 'Quán local ở Đà Lạt nè', 'Đồ ăn nhà tui nấu'],
     },
     breakfast: {
       kicker: 'Ăn sáng',
@@ -1508,7 +1508,7 @@ const restaurantsWithContent = await Promise.all(
     },
     cook: {
       kicker: 'Cà Can Cook',
-      title: 'Đồ ăn tui nấu',
+      title: 'Đồ ăn nhà tui nấu',
       lines: ['Đồ tui nấu', 'Reels bếp núc'],
     },
     collect: {

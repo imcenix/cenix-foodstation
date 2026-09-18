@@ -14,7 +14,7 @@ slug: "ten-mon-nau"
 # Thứ tự (số nhỏ lên trước)
 # order: 1
 
-# Tick true để xuất hiện row "Đồ ăn tui nấu" ngoài tab Khám phá
+# Tick true để xuất hiện row "Đồ ăn nhà tui nấu" ngoài tab Khám phá
 explore_featured: false
 # Tick true để xuất hiện mục "Tôi hay ăn nhất" trong tab Cenix Can Cook
 favorite: false
