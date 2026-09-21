@@ -21,10 +21,10 @@ jobs:
       # Site da migrate sang Hestia host moi. Giu explicit de secret
       # SFTP_HOST cu khong tro deploy ve VPS cu.
       SFTP_HOST: '51.79.191.15'
-      SFTP_PORT: ${{ secrets.SFTP_PORT || '22' }}
-      SFTP_USER: ${{ secrets.SFTP_USER || 'cenix' }}
+      SFTP_PORT: '22'
+      SFTP_USER: 'cenix'
       SFTP_PASSWORD: ${{ secrets.SFTP_PASSWORD }}
-      SFTP_REMOTE_PATH: ${{ secrets.SFTP_REMOTE_PATH || 'web/imcenix.com/public_html' }}
+      SFTP_REMOTE_PATH: 'web/imcenix.com/public_html'
       CENIX_HOSTING: ${{ secrets.CENIX_HOSTING }}
 
     steps:
@@ -132,7 +132,7 @@ jobs:
             set net:max-retries 2;
             set net:timeout 20;
             open -u \"$SFTP_USER\",\"$SFTP_PASSWORD\" -p \"$SFTP_PORT\" \"sftp://$SFTP_HOST\";
-            mirror --reverse --verbose --delete --parallel=1 \
+            mirror --reverse --verbose --delete --parallel=1 --perms \
               --exclude-glob .DS_Store \
               --exclude-glob '*.log' \
               dist/ '$YUM_DIR';
